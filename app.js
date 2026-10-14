@@ -8,7 +8,7 @@ app.use(methodOverride('method'))
 //================================================
 //         ROTAS DE USÚARIO
 //================================================
-app.get('usuario', async (req,res)=>{
+app.get('/usuario', async (req,res)=>{
     try{
          const usuarios = await prisma.usuario.findMany()
          if(usuarios){
@@ -25,7 +25,23 @@ app.get('usuario', async (req,res)=>{
          })
     }
 })
-app.post('usuario', async (req,res) =>{
+app.post("/usuarioLogin", async (req,res)=>{
+    const {emailUser, senhaUser} = req.body
+    if(emailUser && senhaUser){
+        try{
+           const usuario = await prisma.usuario.findUnique({
+            where:{email: emailUser}
+           }) return  res.status(200).json(usuario)
+        }catch(erro){
+            return res.status(404).json({
+                mensagem: "Erro ao logar, tente novamente!"
+            })}
+    }
+    else{
+        return res.status(404).json({'Erro': "Preencha os campos corretamente!"})
+    }
+})
+app.post('/usuario', async (req,res) =>{
     const {nomeUser, emailUser, senhaUser} = req.body
     if(nomeUser && emailUser && senhaUser){
          try{
@@ -51,7 +67,7 @@ app.post('usuario', async (req,res) =>{
     }
    
 })
-app.put('usuario/:id', async (req,res)=>{
+app.put('/usuario/:id', async (req,res)=>{
     const novaInfo = req.body
     const idUser = req.params.id
     if(novaInfo){
@@ -92,12 +108,14 @@ app.put('usuario/:id', async (req,res)=>{
             }
             else if(!emailExist){
                 try{
-                    const usuario = await prisma.usuario.update({
+                     await prisma.usuario.update({
                      where:{id:idUser},
                     data:{email : emailUser}
                     })
                     return res.status(200).json("Email atualizado com sucesso")
-                } 
+                } catch(erro){
+                    return res.status(404).json("Erro ao atualizar email")
+                }
             }
         }
     }else{
@@ -107,7 +125,7 @@ app.put('usuario/:id', async (req,res)=>{
     }
 })
 
-app.delete('usuario/:id', async (req,res) =>{
+app.delete('/usuario/:id', async (req,res) =>{
     const idUser = req.params.id
     try{
      await prisma.usuario.delete(
@@ -143,7 +161,7 @@ app.post('/produto', async (req,res) =>{
        
     
 })
-app.get('produto', async (req,res)=>{
+app.get('/produto', async (req,res)=>{
     try{
     const produtos = await prisma.produto.findMany()
     if(produtos.length > 0){
@@ -155,6 +173,77 @@ app.get('produto', async (req,res)=>{
         return res.status(404).json("Erro ao carregar produtos")
     }
   
+})
+app.put("/produto/:id", async (req,res) =>{
+    const {id} = req.params.id
+    const {nomeProd, precoProd, categoriaProd, quantProd, valProd} = req.body
+    if(nomeProd || precoProd ||categoriaProd || quantProd || valProd){
+        if(nomeProd){
+            try{
+                await prisma.produto.update({
+                    where:{id: id},
+                    data:{nome: nomeProd}
+                })
+                return res.status(200).json("Nome do produto atualizado com sucesso")
+            }catch(erro){
+                return res.status(404).json("Erro ao atualizar nome do produto")
+            }}
+            else if(precoProd){
+                try{
+                    await prisma.produto.update({
+                        where:{id: id},
+                        data:{preco: precoProd}
+                    })
+                    return res.status(200).json("Preço do produto atualizado com sucesso")
+                }catch(erro){
+                    return res.status(404).json("Erro ao atualizar preço do produto")
+                }}
+                else if(categoriaProd){
+                    try{
+                        await prisma.produto.update({
+                            where:{id: id},
+                            data:{categoria: categoriaProd}
+                        })
+                        return res.status(200).json("Categoria do produto atualizado com sucesso")
+                    }catch(erro){
+                        return res.status(404).json("Erro ao atualizar categoria do produto")
+                    }}
+                    else if(quantProd){
+                        try{
+                            await prisma.produto.update({
+                                where:{id: id},
+                                data:{quant: quantProd}
+                            })
+                            return res.status(200).json("Quantidade do produto atualizado com sucesso")
+                        }catch(erro){
+                            return res.status(404).json("Erro ao atualizar quantidade do produto")
+                        }}else if(valProd){
+                            try{
+                                await prisma.produto.update({
+                                    where:{id: id},
+                                    data:{val: valProd}
+                                })
+                                return res.status(200).json("Validade do produto atualizado com sucesso")
+                            }catch(erro){
+                                return res.status(404).json("Erro ao atualizar validade do produto")
+                            }
+            }   
+        }else{
+            return res.status(404).json("Erro, Preencha a informação que deseja atualizar")
+        }
+    }
+)
+app.delete('/produto/:id', async (req,res) =>{
+    const {id} = req.params.id
+    try{
+        await prisma.produto.delete({
+            where:{id: id}
+        })
+        return res.status(200).json("Produto excluido com sucesso")
+    }
+    catch(erro){
+        return res.status(404).json("Erro ao excluir produto")
+    }
 })
 app.listen(port, ()=>{
     console.log(`Servidor rodando: http://locallhost ${port}`)
