@@ -17,12 +17,19 @@ model Produto{
   data_val DateTime
   data_entrada DateTime @default(now( ))
   categoria String
+
+  usuarioId    Int 
+  usuario      usuario   @relation(fields: [usuarioId], references: [id])
+
+
 }
 model usuario {
   id Int @id @default(autoincrement())
   nome String
   email String @unique
   senha String
+
+    produtos Produto[] 
 
 }
 // model preco_prod {
