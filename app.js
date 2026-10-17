@@ -5,6 +5,10 @@ const port = 5000
 const prisma = require('./lib/prisma.js')
 app.use(express.json())
 app.use(methodOverride('method'))
+app.use(express.urlencoded({extended:true}))
+app.use(express.static('views'))
+app.set('view engine', 'html')
+app.use(express(path.join(__dirname, "static")))
 //================================================
 //         ROTAS DE USÚARIO
 //================================================
@@ -31,30 +35,55 @@ app.post("/usuarioLogin", async (req,res)=>{
         try{
            const usuario = await prisma.usuario.findUnique({
             where:{email: emailUser}
-           }) return  res.status(200).json(usuario)
+           };); return  res.status(200).json(usuario)
         }catch(erro){
             return res.status(404).json({
                 mensagem: "Erro ao logar, tente novamente!"
             })}
-    }
+    };
     else{
         return res.status(404).json({'Erro': "Preencha os campos corretamente!"})
     }
 })
+app.get("redSenha", (req,res )=>{
+    return res.redirect("redefinirSenha.tml")
+})
+app.get("redCriaruser", (req, res)=>{
+    return res.redirect("formsCadastro.html")
+})
+app.post("/usuarioSenha", async (req,res)=>{
+    const {emailUser, senhaUser, senhaConf} = req.body
+    if(emailUser && senhaUser && senhaConf){
+        if(senhaUser == senhaConf){
+            try{
+                const usuario = await prisma.usuario.findUnique({
+                    where:{email: emailUser}
+                })
+                if(usuario){
+                    await prisma.usuario.update({
+                        where:{email: emailUser},
+                        data:{senha: senhaUser}
+                    })
+                    return res.status(200).json("Senha atualizada com sucesso")
+                }
+            }catch(erro){
+                return res.status(404).json("Erro ao atualizar senha, tente novamente!")
+            }
+        }else{
+            return res.status(404).json("Erro, As informções não coincidem!")
+        }}
 app.post('/usuario', async (req,res) =>{
     const {nomeUser, emailUser, senhaUser} = req.body
     if(nomeUser && emailUser && senhaUser){
          try{
-        await prisma.usuario.create({
+       usuario = await prisma.usuario.create({
             data:{
                 nome: nomeUser,
                 email: emailUser,
                 senha: senhaUser
             }
         })
-         return res.status(200).json({
-            mensagem:"Usúario cadastrado com sucesso"
-         })
+         return res.status(200).render("pagPrincial.html", {usuario})
     }catch(erro){
        return res.status(504).json({
                  mensagem:"Erro, tente novamente"

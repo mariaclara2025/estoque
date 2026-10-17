@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <link rel="stylesheet" href="static/style.css">
+>
+    <title>Página de redefinir senha</title>
+</head>
+<body>
+    <form action="/usuarioSenha" method="post">
+        <label for="username">Email:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="senhaUser" required><br><br>
+        <label for="">Confirmar senha:</label>
+         <input type="password" id="password" name="senhaConf" required><br><br>
+        //criar rota para redefinir senha
+        <input type="submit" value="Entrar">
+       <p><%= mensagem %></p>
+</body>
+</html>

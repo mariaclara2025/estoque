@@ -3,16 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="static/style.css">
+   
     <title>Página de Login</title>
 </head>
 <body>
+    <div class="forms">
     <form action="/usuarioLogin" method="post">
         <label for="username">Usuário:</label>
         <input type="text" id="username" name="username" required><br><br>
         
         <label for="password">Senha:</label>
         <input type="password" id="password" name="senhaUser" required><br><br>
-        
+        //criar rota para redefinir senha
         <input type="submit" value="Entrar">
+        <p>Esqueceu a senha? <a href="/redSenha">Redefinir senha</a></p>
+        <p>Criar conta?<a href="redCriarUser">Criar conta</a></p>
+       <p><%= mensagem %></p>
+    </div>
 </body>
 </html>

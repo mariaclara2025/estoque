@@ -1,0 +1,11 @@
+    .forms{
+      column-gap: 20px;
+      row-gap: 4px;
+      align-items: center;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      justify-content: center;
+      display: flex;
+        }
