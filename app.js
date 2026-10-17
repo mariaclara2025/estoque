@@ -5,46 +5,49 @@ const port = 5000
 const prisma = require('./lib/prisma.js')
 app.use(express.json())
 app.use(methodOverride('method'))
+<<<<<<< HEAD
 app.use(express.urlencoded({extended:true}))
 app.use(express.static('views'))
 app.set('view engine', 'html')
 app.use(express(path.join(__dirname, "static")))
+=======
+//Define que as pastas a serem chamadas serão ".html"
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
+>>>>>>> 18f0d4e29267de63f2640ce1adc2d3436711e2fa
 //================================================
 //         ROTAS DE USÚARIO
 //================================================
-app.get('/usuario', async (req,res)=>{
-    try{
-         const usuarios = await prisma.usuario.findMany()
-         if(usuarios){
-            return res.status(200).json(usuarios)
-         }else{
-            return  res.json({ 
-              mensagem: 'Nenhum usúario cadastrado.'
-             })
-         }
 
-    }catch(erro){
-        return res.status(504).json({ 
-            mensagem: "Erro ao listar usuários!"
-         })
-    }
-})
 app.post("/usuarioLogin", async (req,res)=>{
     const {emailUser, senhaUser} = req.body
-    if(emailUser && senhaUser){
+  
+    if(emailUser && senhaUser ){
         try{
-           const usuario = await prisma.usuario.findUnique({
+           const usuario = await prisma.usuario.findMany({
             where:{email: emailUser}
+<<<<<<< HEAD
            };); return  res.status(200).json(usuario)
+=======
+            
+           }); 
+            const prodEstoque = await prisma.produto.findMany({
+            where:{usuarioId: usuario.id}
+           })
+           return  res.status(200).render("principal", usuario, prodEstoque)
+           
+>>>>>>> 18f0d4e29267de63f2640ce1adc2d3436711e2fa
         }catch(erro){
             return res.status(404).json({
                 mensagem: "Erro ao logar, tente novamente!"
             })}
     };
     else{
-        return res.status(404).json({'Erro': "Preencha os campos corretamente!"})
+        return res.status(404).json({mensagem:
+           "Preencha os campos corretamente!"})
     }
 })
+<<<<<<< HEAD
 app.get("redSenha", (req,res )=>{
     return res.redirect("redefinirSenha.tml")
 })
@@ -77,13 +80,28 @@ app.post('/usuario', async (req,res) =>{
     if(nomeUser && emailUser && senhaUser){
          try{
        usuario = await prisma.usuario.create({
+=======
+app.get('/pagCadastro', (req,res)=>{
+    res.render('formsCadastro')
+})
+app.post('/usuarioCadastro', async (req,res) =>{
+    const {nomeUser, emailUser, senhaUser} = req.body
+    if(nomeUser && emailUser && senhaUser){
+         try{
+       const usuario = await prisma.usuario.create({
+>>>>>>> 18f0d4e29267de63f2640ce1adc2d3436711e2fa
             data:{
                 nome: nomeUser,
                 email: emailUser,
                 senha: senhaUser
             }
         })
+<<<<<<< HEAD
          return res.status(200).render("pagPrincial.html", {usuario})
+=======
+        
+         return res.render("login.html", usuario)
+>>>>>>> 18f0d4e29267de63f2640ce1adc2d3436711e2fa
     }catch(erro){
        return res.status(504).json({
                  mensagem:"Erro, tente novamente"
@@ -96,6 +114,7 @@ app.post('/usuario', async (req,res) =>{
     }
    
 })
+
 app.put('/usuario/:id', async (req,res)=>{
     const novaInfo = req.body
     const idUser = req.params.id
