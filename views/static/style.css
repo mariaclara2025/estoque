@@ -9,3 +9,30 @@
       justify-content: center;
       display: flex;
         }
+        button img {
+          width: 30px;
+          height: 30px;
+          cursor: pointer;
+        }
+        .sidebar{
+          position: fixed;
+          right: 0;
+          top:0;
+          background: #938b8b;
+          padding: 20px;
+        }
+      
+        .sidebar.ativa{
+          display: block;
+        }
+        .model{
+          display: none;
+          position: fixed;
+          z-index: 1000;
+        }
+        .details{ 
+          background: white;
+          padding: 20px;
+          margin: 10% auto;
+          border-radius: 10px;
+        }

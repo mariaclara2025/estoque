@@ -5,16 +5,12 @@ const port = 5000
 const prisma = require('./lib/prisma.js')
 app.use(express.json())
 app.use(methodOverride('method'))
-<<<<<<< HEAD
 app.use(express.urlencoded({extended:true}))
-app.use(express.static('views'))
-app.set('view engine', 'html')
-app.use(express(path.join(__dirname, "static")))
-=======
+
+
 //Define que as pastas a serem chamadas serão ".html"
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
->>>>>>> 18f0d4e29267de63f2640ce1adc2d3436711e2fa
 //================================================
 //         ROTAS DE USÚARIO
 //================================================
@@ -26,28 +22,32 @@ app.post("/usuarioLogin", async (req,res)=>{
         try{
            const usuario = await prisma.usuario.findMany({
             where:{email: emailUser}
-<<<<<<< HEAD
-           };); return  res.status(200).json(usuario)
-=======
-            
            }); 
-            const prodEstoque = await prisma.produto.findMany({
-            where:{usuarioId: usuario.id}
+            const produtos = await prisma.produto.findMany({
+            where:{usuarioId: usuario.id},
+              include: {
+                fornecedor: true
+            }
            })
-           return  res.status(200).render("principal", usuario, prodEstoque)
-           
->>>>>>> 18f0d4e29267de63f2640ce1adc2d3436711e2fa
-        }catch(erro){
+          
+             return  res.status(200).render("pagPrincipal.html",{
+                 usuario,
+                  produtos,
+                  abaAtiva: "produtos"
+             })
+           } catch(erro){
             return res.status(404).json({
                 mensagem: "Erro ao logar, tente novamente!"
             })}
-    };
+    }
     else{
         return res.status(404).json({mensagem:
            "Preencha os campos corretamente!"})
     }
 })
-<<<<<<< HEAD
+app.get("/redLogin", (req,res)=> {
+    return res.redirect("formsLogin.html")
+})
 app.get("redSenha", (req,res )=>{
     return res.redirect("redefinirSenha.tml")
 })
@@ -72,36 +72,25 @@ app.post("/usuarioSenha", async (req,res)=>{
             }catch(erro){
                 return res.status(404).json("Erro ao atualizar senha, tente novamente!")
             }
-        }else{
-            return res.status(404).json("Erro, As informções não coincidem!")
-        }}
+            }else{
+                return res.status(404).json({mensagem: "Erro, As informções não coincidem!" })
+        }}else{
+                return res.status(404).json({mensagem: "Preencha todos os campos."})
+        } })
+    
 app.post('/usuario', async (req,res) =>{
     const {nomeUser, emailUser, senhaUser} = req.body
     if(nomeUser && emailUser && senhaUser){
          try{
        usuario = await prisma.usuario.create({
-=======
-app.get('/pagCadastro', (req,res)=>{
-    res.render('formsCadastro')
-})
-app.post('/usuarioCadastro', async (req,res) =>{
-    const {nomeUser, emailUser, senhaUser} = req.body
-    if(nomeUser && emailUser && senhaUser){
-         try{
-       const usuario = await prisma.usuario.create({
->>>>>>> 18f0d4e29267de63f2640ce1adc2d3436711e2fa
             data:{
                 nome: nomeUser,
                 email: emailUser,
                 senha: senhaUser
             }
         })
-<<<<<<< HEAD
          return res.status(200).render("pagPrincial.html", {usuario})
-=======
         
-         return res.render("login.html", usuario)
->>>>>>> 18f0d4e29267de63f2640ce1adc2d3436711e2fa
     }catch(erro){
        return res.status(504).json({
                  mensagem:"Erro, tente novamente"
@@ -114,7 +103,9 @@ app.post('/usuarioCadastro', async (req,res) =>{
     }
    
 })
-
+app.get("/redEditar", (req,res) => {
+    return res.redirect("editarPerfil.html")
+})
 app.put('/usuario/:id', async (req,res)=>{
     const novaInfo = req.body
     const idUser = req.params.id
@@ -126,7 +117,10 @@ app.put('/usuario/:id', async (req,res)=>{
             }
                  
                 )
-                return res.status(200).json("Nome atualizado com sucesso") 
+                return res.status(200).json({
+                    mensagem: "Nome atualizado com sucesso"
+                }
+                   ) 
             }catch(erro){
                return res.status(404).json({
                     erro: "Erro ao atualizar nome"
@@ -138,8 +132,10 @@ app.put('/usuario/:id', async (req,res)=>{
                    { where:{id: idUser},
                     data:{senha: senhaUser}}
                 )
-                return res.status(200).json(
-                    "Senha atualizada com sucesso")
+                return res.status(200).json({
+                    mensagem:  "Senha atualizada com sucesso"
+                }
+                  )
 
             }catch(erro){
                 return res.status(404).json({
@@ -152,7 +148,10 @@ app.put('/usuario/:id', async (req,res)=>{
                 where:{emmail: emailUser}
             })
             if(emailExist ){
-                return res.status(404).json("Email indisponivel, tente novamente!")
+                return res.status(404).json({
+                    mensagem:"Email indisponivel, tente novamente!"
+                }
+                    )
             }
             else if(!emailExist){
                 try{
@@ -160,7 +159,10 @@ app.put('/usuario/:id', async (req,res)=>{
                      where:{id:idUser},
                     data:{email : emailUser}
                     })
-                    return res.status(200).json("Email atualizado com sucesso")
+                    return res.status(200).json({
+                        mensagem:"Email atualizado com sucesso"
+                    }
+                        )
                 } catch(erro){
                     return res.status(404).json("Erro ao atualizar email")
                 }
@@ -186,17 +188,22 @@ app.delete('/usuario/:id', async (req,res) =>{
 //================================================
 //         ROTAS DE PRODUTO
 //================================================
+app.get("/redProd", (req,res)=> {
+    return res.redirect("pagProduto")
+})
 app.post('/produto', async (req,res) =>{
-    const {nomeProd, precoProd, categoriaProd, quantProd, valProd} = req.body
+    const {nomeProd, precoProd, categoriaProd, quantProd, valProd, fornProd} = req.body
+   
     try{
-         if(nomeProd && categoriaProd && quantProd && valProd){
+         if(nomeProd && categoriaProd && quantProd && valProd && fornProd){
        await prisma.produto.create({
            data:{
                 nome: nomeProd,
                 preco: precoProd,
                 categoria: categoriaProd,
                 quant: quantProd,
-                val: valProd
+                val: valProd,
+                fornecedor: { connect: { id: Number(fornecedorId) } }
             }
        }
          
@@ -211,17 +218,21 @@ app.post('/produto', async (req,res) =>{
 })
 app.get('/produto', async (req,res)=>{
     try{
-    const produtos = await prisma.produto.findMany()
-    if(produtos.length > 0){
-         return res.status(200).json(produtos)
+        const nomeProd = req.body;
+    const produto = await prisma.produto.findMany({
+        where: {nome: nomeProd}
+    })
+    if(produto.length > 0){
+         return res.status(200).json(produto)
     }else{
         return res.status(200).json("Nenhum produto cadastrado!")
     }
     }catch(erro){
-        return res.status(404).json("Erro ao carregar produtos")
+        return res.status(404).json("Erro ao carregar produto")
     }
   
 })
+
 app.put("/produto/:id", async (req,res) =>{
     const {id} = req.params.id
     const {nomeProd, precoProd, categoriaProd, quantProd, valProd} = req.body
@@ -292,6 +303,15 @@ app.delete('/produto/:id', async (req,res) =>{
     catch(erro){
         return res.status(404).json("Erro ao excluir produto")
     }
+})
+// =====================================
+// ROTAS FORNECEDOR
+// =====================================
+app.get("/redForn", (req,res) =>{
+    return res.redirect("pagFornecedor.html")
+})
+app.post("/fornecedor", (req,res)=> {
+
 })
 app.listen(port, ()=>{
     console.log(`Servidor rodando: http://locallhost ${port}`)

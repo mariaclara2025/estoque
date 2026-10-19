@@ -13,15 +13,16 @@ datasource db {
 model Produto{
   id Int @id @default(autoincrement())
   nome String
-  email String @unique
+  preco Int
+  quant Int
   data_val DateTime
   data_entrada DateTime @default(now( ))
-  categoria String
 
   usuarioId    Int 
   usuario      usuario   @relation(fields: [usuarioId], references: [id])
 
-
+  fornecedorId Int
+  fornecedor fornecedor @relation(fields: [fornecedorId], references[id])
 }
 model usuario {
   id Int @id @default(autoincrement())
@@ -32,6 +33,16 @@ model usuario {
     produtos Produto[] 
 
 }
+
+model  fornecedor {
+  id        Int       @id @default(autoincrement())
+  nome      String
+  cnpj      String    @unique 
+  email     String    @unique
+  telefone  String    
+  produtos  Produto[] 
+}
+
 // model preco_prod {
 //   lucro Int
 //   id_prod
