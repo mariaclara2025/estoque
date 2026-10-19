@@ -22,7 +22,7 @@ model Produto{
   usuario      usuario   @relation(fields: [usuarioId], references: [id])
 
   fornecedorId Int
-  fornecedor fornecedor @relation(fields: [fornecedorId], references[id])
+  fornecedor fornecedor @relation(fields: [fornecedorId], references:[id])
 }
 model usuario {
   id Int @id @default(autoincrement())
