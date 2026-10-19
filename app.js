@@ -182,7 +182,10 @@ app.delete('/usuario/:id', async (req,res) =>{
         { where:{id: idUser}}
      ); return res.redirect("login.html")
     }catch{
-        return res.status(404).json("Erro ao excluir usúario")
+        return res.status(404).json(
+            {
+                erroExcluir: "Erro ao excluir usúario"
+            })
     }
 })
 //================================================

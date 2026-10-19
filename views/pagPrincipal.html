@@ -3,64 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/style.css">
     <title>Document</title>
 </head>
 <body>
-    <h1>estoque Aqui</h1>
-    <form action="/produto">
-    <input type="text" name="buscarProduto" id="" placeholder="Digite o nome do produto:" >
-        <button type="submit">pesquisar</button>
-    </form>
-    <%if(!usuario ){ %>
-        <a href="/redLogin" id="login">Login</a>
-
-  <%  } else{  %>
-    <a href="/redLogin" id="login">Sair 💨</a>
-    <button onclick="abrirSidebar()"> 
-    <img src="/static/img/perfil.png"  >
- </button>  
- <div id="sidebar" class="sidebar">
-    <button onclick="fecharSidebar">❌ </button>
-    <a href="/redEditar">Editar perfil</a>
-    <h3>Meu perfil</h3>
-    <h4>Nome:</h4>
-    <p><%= usuario.nome %></p>
-    <h4>Email:</h4>
-    <p><% usuario.email %></p>
-    <p>Informações sensiveis não serão expostas!</p>
- </div>
- <%  } %>
- 
- 
- <% if (usuario) { %>
-    <h2>Produtos em estoque </h2>
-        <a href="/redProd" id="cadProd">Cadastrar produto</a>
-        <a href="/redForn" id="cadProd">Cadastrar fornecedor</a>
-        <% produtos.forEach(produto =>
-        { %>
-            <div>
-                <h3>Nome> <%=produto.nome%></h3>
-                <p>Fornecedor: <%= produto.fornecedor.nome %></p>
-                <p>Quantidade: <%produto.quant %></p>
-                <p>Preço: <%= produto.preco %></p>
-                <button class="delete" href="/produto/:<%= produto.id %>">Exckuir Produto</button>
-                <button onclick="abrirDetalhes('<%= produto.id%> ')" class="model">Ver detalhes</button>
-            </div>
-            <div id="detalhes-<%=produto.id%>" class="model">
-<             <div class="details" class="model">
-                        <button onclick="fecharDetalhes('<%= produto.id%> ')">❌</button>
-                        <p><strong>Data de validade: produto.</strong> <%= produto.data_val %></p>
-                        <p><strong>Dados de fornecedor:</strong></p><br>
-                        <p><strong>CNPJ</strong> <%+ produtofornecedor.cnpj</p>
-                        <p><strong>Telefone:</strong> <%=produto.fornecedor.telefone</p>
-                    </div>
-            </div>
-              }  }
-       <% else { <%
-        <hr>
-       }       
-
-      
+    <header>
+        <h1>estoque Aqui</h1>
+        <form action="/produto">
+        <input type="text" name="buscarProduto" id="" placeholder="Digite o nome do produto:" >
+            <button type="submit">pesquisar</button>
+        </form>
+        <%if(!usuario ){ %>
+            <a href="/redLogin" id="login">Login</a>
+    
+      <%  } else{  %>
+        <a href="/redLogin" id="login">Sair 💨</a>
+        <button onclick="abrirSidebar()" class="sidebar"> 
+        <img src="/static/perfil.png"  >
+     </button>  
+     
+           }       
+    </header>
+   
+<main>
+    <div id="sidebar" class="sidebar">
+        <button onclick="fecharSidebar">❌ </button>
+        <a href="/redEditar">Editar perfil</a>
+        <h3>Meu perfil</h3>
+        <h4>Nome:</h4>
+        <p><%= usuario.nome %></p>
+        <h4>Email:</h4>
+        <p><% usuario.email %></p>
+        <a href="/usuario/:<%=usuario.id %>_method=delete" class="excluir">Excluir usúario</a>
+       <p><%= erroExcluir %></p>
+        <p>Informações sensiveis não serão expostas!</p>
+     </div>
+     <%  } %>
+     
+     
+     <% if (usuario) { %>
+        <h2>Produtos em estoque </h2>
+            <a href="/redProd" id="cadProd">Cadastrar produto</a>
+            <a href="/redForn" id="cadProd">Cadastrar fornecedor</a>
+            <% produtos.forEach(produto =>
+            { %>
+                <div>
+                    <h3>Nome> <%=produto.nome%></h3>
+                    <p>Fornecedor: <%= produto.fornecedor.nome %></p>
+                    <p>Quantidade: <%produto.quant %></p>
+                    <p>Preço: <%= produto.preco %></p>
+                    <button class="delete" href="/produto/:<%= produto.id %>_method=delete">Excluir Produto</button>
+                    <button class="atualizar" href="/produto/:<%= produto.id %_method=put>">Editar</button>
+                    <button onclick="abrirDetalhes('<%= produto.id%> ')" class="model">Ver detalhes</button>
+                </div>
+                <div id="detalhes-<%=produto.id%>" class="model">
+                <div class="details" class="model">
+                            <button onclick="fecharDetalhes('<%= produto.id%> ')">❌</button>
+                            <p><strong>Data de validade: produto.</strong> <%= produto.data_val %></p>
+                            <p><strong>Dados de fornecedor:</strong></p><br>
+                            <p><strong>CNPJ</strong> <%+ produtofornecedor.cnpj</p>
+                            <p><strong>Telefone:</strong> <%=produto.fornecedor.telefone</p>
+                        </div>
+                </div>
+                  }  }
+           <% else { <%
+            <hr>
+</main>
+      <footer>
+        <p>Programação web II - Maria Clara Araújo Santod</p>
+      </footer>
 </body>
 <script>
     function abrirSidebar(){

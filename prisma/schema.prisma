@@ -30,7 +30,7 @@ model usuario {
   email String @unique
   senha String
 
-    produtos Produto[] 
+  produtos Produto[] 
 
 }
 
