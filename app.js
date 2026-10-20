@@ -173,7 +173,7 @@ app.delete('/usuario/:id', async (req,res) =>{
 //================================================
 //         ROTAS DE PRODUTO
 //================================================
-app.get("/redProd/:id", (req,res)=> {
+app.get("/redProd/:id",async (req,res)=> {
     const idUser = req.params.id
     try{
          const usuario = await prisma.usuario.findMany({
@@ -280,9 +280,9 @@ app.delete('/produto/:id', async (req,res) =>{
 // =====================================
 // ROTAS FORNECEDOR
 // =====================================
-app.get("/redForn/:id", (req,res) =>{
+app.get("/redForn/:id",async (req,res) =>{
     const idUser = req.params.id
-    const 
+     
     const forn = await prisma.Produto.findMany(
         {where:{id:idUser},
         data: {
@@ -317,7 +317,7 @@ app.post("/fornecedor/:id", async (req,res)=> {
         })
     }
 })
-app.put("fornAtualizar/:id&idForn", (req,res)=>{
+app.put("fornAtualizar/:id&idForn",async (req,res)=>{
    try{
       const id = req.params.id
     const idForn = req.params.idForn
