@@ -1,14 +1,43 @@
     .forms{
-      column-gap: 20px;
-      row-gap: 4px;
-      align-items: center;
       background: white;
       border: 1px solid #ccc;
-      padding: 15px;
+      padding: 10px;
       border-radius: 8px;
-      justify-content: center;
       display: flex;
+      justify-content: center;
+        text-align: center;
         }
+        .forms p{
+          font-size: 20px;
+        }
+        body{
+          background-color: rgb(60, 60, 232);
+
+        }
+        h1, h2{
+          display:flex;
+          justify-content: center;
+          text-align: center;
+          color: #f5f5f5;
+        }
+        label{
+          color: rgb(0, 0, 0);
+          font-size: 20px;
+          font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+       input{
+     width: 300px;  
+    padding: 12px 16px;
+    font-size: 16px;
+    border-radius: 6px; /* Opcional: arredonda as bordas */
+    border: none;
+    border-bottom: 1px solid #333;
+    outline: none;
+
+       }
+       .entrar{
+        margin-top: 20px;
+       }
         button img {
           width: 30px;
           height: 30px;
@@ -58,6 +87,10 @@
           padding: 10px 20px;
           border-radius: 5px;
           cursor: pointer;
+        }
+        .entrar{
+          background-color:  rgb(60, 60, 232);
+          color: white
         }
         h1{
           text-align: center;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/style.css">
+ 
     <title>Document</title>
 </head>
 <body>
@@ -43,8 +43,8 @@
      
      <% if (usuario) { %>
         <h2>Produtos em estoque </h2>
-            <a href="/redProd" id="cadProd">Cadastrar produto</a>
-            <a href="/redForn" id="cadProd">Cadastrar fornecedor</a>
+            <a href="/redProd/<%=usuario.id%>" id="cadProd">Cadastrar produto</a>
+            <a href="/redForn/<%=usuario.id%" id="cadProd">Cadastrar fornecedor</a>
             <% produtos.forEach(produto =>
             { %>
                 <div>

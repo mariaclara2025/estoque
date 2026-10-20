@@ -59,30 +59,7 @@ app.get("redSenha", (req,res )=>{
 app.get("redCriaruser", (req, res)=>{
     return res.redirect("formsCadastro.html")
 })
-app.post("/usuarioSenha", async (req,res)=>{
-    const {emailUser, senhaUser, senhaConf} = req.body
-    if(emailUser && senhaUser && senhaConf){
-        if(senhaUser == senhaConf){
-            try{
-                const usuario = await prisma.usuario.findUnique({
-                    where:{email: emailUser}
-                })
-                if(usuario){
-                    await prisma.usuario.update({
-                        where:{email: emailUser},
-                        data:{senha: senhaUser}
-                    })
-                    return res.status(200).json("Senha atualizada com sucesso")
-                }
-            }catch(erro){
-                return res.status(404).json("Erro ao atualizar senha, tente novamente!")
-            }
-            }else{
-                return res.status(404).json({mensagem: "Erro, As informções não coincidem!" })
-        }}else{
-                return res.status(404).json({mensagem: "Preencha todos os campos."})
-        } })
-    
+
 app.post('/usuario', async (req,res) =>{
     const {nomeUser, emailUser, senhaUser} = req.body
     if(nomeUser && emailUser && senhaUser){
@@ -189,17 +166,30 @@ app.delete('/usuario/:id', async (req,res) =>{
     }catch{
         return res.status(404).json(
             {
-                erroExcluir: "Erro ao excluir usúario"
+                mensagem: "Erro ao excluir usúario"
             })
     }
 })
 //================================================
 //         ROTAS DE PRODUTO
 //================================================
-app.get("/redProd", (req,res)=> {
-    return res.redirect("pagProduto")
-})
-app.post('/produto', async (req,res) =>{
+app.get("/redProd/:id", (req,res)=> {
+    const idUser = req.params.id
+    try{
+         const usuario = await prisma.usuario.findMany({
+        where:{id: idUser},
+        include:{
+            fornecedor: true
+        }
+   })
+    return res.render("pagProduto",
+        {usuario}
+    )
+    }catch(erro){
+        return res.status(404)
+  }
+});
+app.post('/produtoCadastro', async (req,res) =>{
     const {nomeProd, precoProd, categoriaProd, quantProd, valProd, fornProd} = req.body
    
     try{
@@ -211,7 +201,7 @@ app.post('/produto', async (req,res) =>{
                 categoria: categoriaProd,
                 quant: quantProd,
                 val: valProd,
-                fornecedor: { connect: { id: Number(fornecedorId) } }
+                fornecedor: { connect: { id: Number(fornProd) } }
             }
        }
          
@@ -224,26 +214,10 @@ app.post('/produto', async (req,res) =>{
        
     
 })
-app.get('/produto', async (req,res)=>{
-    try{
-        const nomeProd = req.body;
-    const produto = await prisma.produto.findMany({
-        where: {nome: nomeProd}
-    })
-    if(produto.length > 0){
-         return res.status(200).json(produto)
-    }else{
-        return res.status(200).json("Nenhum produto cadastrado!")
-    }
-    }catch(erro){
-        return res.status(404).json("Erro ao carregar produto")
-    }
-  
-})
 
 app.put("/produto/:id", async (req,res) =>{
     const {id} = req.params.id
-    const {nomeProd, precoProd, categoriaProd, quantProd, valProd} = req.body
+    const {nomeProd, precoProd, quantProd, valProd} = req.body
     if(nomeProd || precoProd ||categoriaProd || quantProd || valProd){
         if(nomeProd){
             try{
@@ -265,16 +239,7 @@ app.put("/produto/:id", async (req,res) =>{
                 }catch(erro){
                     return res.status(404).json("Erro ao atualizar preço do produto")
                 }}
-                else if(categoriaProd){
-                    try{
-                        await prisma.produto.update({
-                            where:{id: id},
-                            data:{categoria: categoriaProd}
-                        })
-                        return res.status(200).json("Categoria do produto atualizado com sucesso")
-                    }catch(erro){
-                        return res.status(404).json("Erro ao atualizar categoria do produto")
-                    }}
+              
                     else if(quantProd){
                         try{
                             await prisma.produto.update({
@@ -315,11 +280,73 @@ app.delete('/produto/:id', async (req,res) =>{
 // =====================================
 // ROTAS FORNECEDOR
 // =====================================
-app.get("/redForn", (req,res) =>{
-    return res.redirect("pagFornecedor.html")
-})
-app.post("/fornecedor", (req,res)=> {
+app.get("/redForn/:id", (req,res) =>{
+    const idUser = req.params.id
+    const 
+    const forn = await prisma.Produto.findMany(
+        {where:{id:idUser},
+        data: {
+            fornecedorId
+        }
 
+        })
+    return res.render("pagFornecedor.html", {
+       forn
+    })
+})
+app.post("/fornecedor/:id", async (req,res)=> { 
+    const {nome,email,cnpj,tel} = req.body
+    try{
+        
+       await prisma.fornecedor.create({
+        data:{
+            nome: nome,
+            email: email,
+            cnpj: cnpj,
+            telefone: tel,
+            usuario:{
+                connect:{
+                    id: Number(req.params.id)
+                }
+            }
+        }
+       })
+    }catch(erro){
+        return res.status(404).json({
+            mensagem: "Erro ao adicionar!"
+        })
+    }
+})
+app.put("fornAtualizar/:id&idForn", (req,res)=>{
+   try{
+      const id = req.params.id
+    const idForn = req.params.idForn
+     const fornecedor = await prisma.fornecedor.update({
+        where: { id: idForn}
+    })
+     return res.status(204).render("")
+   }catch(erro){
+    return res.status(204).json({
+        mensagem: "Erro ao atualizar usúario."
+    })
+   }
+  
+})
+
+app.delete("deleteForn/:id", async (req,res)=>{
+   try{
+
+     const forn =await  prisma.fornecedor.delete({
+        where:{
+            id: Number(req.params.id)
+        }
+    }); return res.status(204).render("")
+   }catch(erro){
+    return res.status(404).json({
+        mensagem: "Erro ao excluir fornecedor!"
+    })
+   }
+   
 })
 app.listen(port, ()=>{
     console.log(`Servidor rodando: http://localhost:${port}`)

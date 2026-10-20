@@ -3,39 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
        <link rel="stylesheet" href="static/style.css">
 
     <title>Pagina de cadastro</title>
 </head>
 <body>
+        <h1>Estoque-aqui</h1>
+    <h2>Cadastro</h2>
+        <div class="forms">
+
     <form action="/usuario" method="post">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nomeUser" required><br><br>
-=======
-    <title>Páginade cadastro</title>
-</head>
-<body>
-    <h1>Cadastre-se</h1>
-    <form action="/usuarioCadastro" method="post">
-        <label for="username">Usuário:</label>
-        <input type="text" id="username" name="username" required><br><br>
->>>>>>> 18f0d4e29267de63f2640ce1adc2d3436711e2fa
+        <label for="nome">Nome:</label><br>
+        <input type="text" id="nome" name="nomeUser" required><br>
         
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="emailUser" required><br><br>
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="emailUser" required><br>
         
-<<<<<<< HEAD
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" name="senhaUser" required><br><br>
+
+        <label for="senha">Senha:</label><br>
+        <input type="password" id="senha" name="senhaUser" required><br>
         
-        <input type="submit" value="Cadastrar"></form>
+        <input type="submit" value="Cadastrar" class="entrar">
         <p><%= mensagem %></p>
-=======
-        <label for="password">Senha:</label>
-        <input type="password" id="password" name="senhaUser" required><br><br>
-        
-        <input type="submit" value="Cadastrar">
->>>>>>> 18f0d4e29267de63f2640ce1adc2d3436711e2fa
+       
+        </div></form>
 </body>
 </html>

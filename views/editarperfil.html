@@ -3,18 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/style.css">
     <title>Editar Perfil</title>
 </head>
 <body>
-    <h1>Editar Perfil</h1>
-    <form action="/usuario/: <%= usuario.id %>_method=PUT" method="post">
-        <select name="infoNova" id="infoNova">
+   
+         <h1>Estoque-aqui</h1>
+    <h2>Editar perfil</h2
+   
+    
+    <h2>Editar perfil</h2>
+    <div class="forms">
+            <form action="/usuario/: <%= usuario.id %>_method=PUT" method="post">
+        <select name="infoNova" id="infoNova" style=" padding: 10px; border-radius: 15px; outline: none;">
             <option value="email">Email</option>
             <option value="senha">senha</option>
             <option value="nome">Nome</option>
         </select>
-        <button type="submit">Enviar</button>
+     
+        
+                <input type="text" name="novaInfo" required id="" placeholder="Digite a nova informação"><br>
+           <input type="submit" class="entrar">
+            <p><%= mensagem %></p>
     </form>
-    <p><%= mensagem %></p>
+   
+    </div>
+
 </body>
 </html>

@@ -3,12 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/style.css">
     <title>Página cadastro de produtos</title>
 </head>
 <body>
-    <h1>Cadastro de produtos</h1>
-    <form action="/produto" method="post">
-        
-    </form>
+             <h1>Estoque-aqui</h1>
+    <h2>Cadastro de fornecedores</h2>
+ <div class="forms">
+    <form action="/produtoCadastro/<$= usuarioID %>" method="post">
+         
+  <label for="">Nome</label><br>
+  <input type="text" name="nome" id=""><br>
+  <label for="">Preço</label><br>
+  <input type="number" name="preco" id=""><br>
+  <label for="">Quantidade</label><br>
+  <input type="number" name="quant id=""><br>
+  <label for="">Data de validade</label><br>
+  <input type="datetime" name="data_val" id=""><br>
+  <input type="submit" value="Cadastrar" class="entrar"><br>
+  <label>Fornecedor</label>
+     <select name="fornProd" id="">
+            <% forn.forEach(fornecedor =>
+            <option value="<%=fornecedor.id%>" ><%= fornecedor.cnpj -- fornecedor.nome %></option>
+            )
+        </select>
+        <p><%= mensagem %>/p>
+   </div> </form>
 </body>
 </html>

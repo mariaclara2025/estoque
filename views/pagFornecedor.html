@@ -3,10 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="static/style.css">
+    <title>Cadastro Fornecedor</title>
 </head>
 <body>
-    <h1>Cadastro de fornecedores</h1>
-    <form action="/fornecedor" method="post"></form>
+    
+         <h1>Estoque-aqui</h1>
+    <h2>Cadastro de fornecedores</h2>
+     <div class="forms">
+    <form action="/fornecedor/<%= usuarioID %>" method="post">
+  
+        <label for="">Nome</label><br>
+        <input type="text" name="nome" id=""><br>
+        <label for="">email</label>
+        <input type="email" name="email" id="email"><br>
+        <label for="">CNPJ</label><br>
+        <input type="text" name="cnpj" id="cnpj"><br>
+        <label for="">Telefone</label><br>
+        <input type="text" name="tel" id=""><br>
+        <select name="forn id="">
+            <% forEach.usuario.fornecedor(fornecedor =>{
+                  <option value="<%= fornecedor.cnpj %> "><%= fornecedor.cnpj --- fornecedor.nome %></option><br>
+        })
+          
+        </select>
+        
+        <input type="submit" value="Cadastrar" class="entrar"><br>
+            <form action="deleteForn/<%=fornecedor.id%_method=delete>" method="get"><br>
+        <select name="forn id="">
+            <% forEach.usuario.fornecedor(fornecedor =>{
+                  <option value="<%= fornecedor.cnpj %>"><%= fornecedor.cnpj %></option><br>
+        })
+         <br> <input type="submit" value="Excluir"><br>
+        </select>
+            </form> 
+              </form
+    </div>
 </body>
 </html>
