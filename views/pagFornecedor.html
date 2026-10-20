@@ -29,7 +29,7 @@
         </select>
         
         <input type="submit" value="Cadastrar" class="entrar"><br>
-            <form action="deleteForn/<%=fornecedor.id%_method=delete>" method="get"><br>
+            <form action="deleteForn/<%=fornecedor.id%>?_method=delete>" method="get"><br>
         <select name="forn id="">
             <% forEach.usuario.fornecedor(fornecedor =>{
                   <option value="<%= fornecedor.cnpj %>"><%= fornecedor.cnpj %></option><br>

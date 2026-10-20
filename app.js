@@ -2,23 +2,22 @@ const express = require('express')
 const methodOverride = require('method-override')
 const app = express()
 const port = 5000
+const path = require('path');
 const prisma = require('./lib/prisma.js')
 app.use(express.json())
 app.use(methodOverride('_method'))
 app.use(express.urlencoded({extended:true}))
-app.set('views', path.join(__dirname, 'views'));
-app.set('views', path.join(__dirname, 'views'));
 
 
 //Define que as pastas a serem chamadas serão ".html"
-
+app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'html')
 //================================================
 //         ROTAS DE USÚARIO
 //================================================
 app.get("/", (req,res)=> {
-    res.render("pagPrincipal.html")
+    res.render("pagPrincipal")
 })
 app.post("/usuarioLogin", async (req,res)=>{
     const {emailUser, senhaUser} = req.body
