@@ -24,7 +24,9 @@
         <input type="password" id="senha" name="senhaUser" required><br>
         
         <input type="submit" value="Cadastrar" class="entrar">
-        <p><%= mensagem %></p>
+         <% if (typeof mensagem !== 'undefined' && mensagem) { %>
+    <p><%= mensagem %></p>
+<% } %>
        
         </div></form>
 </body>

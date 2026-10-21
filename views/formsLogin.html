@@ -24,12 +24,13 @@
         <!-- criar rota para redefinir senha -->
         <input type="submit" value="Entrar" class="entrar">
         <p>Esqueceu a senha? <a href="/redSenha">Redefinir senha</a></p>
-       <p>Não se cadastrou?  <a href="/pagCadastro">Cadastre-se</a></p>
+       <p>Não se cadastrou?  <a href="/redCriaruser">Cadastre-se</a></p>
       
-
+        <% if (typeof mensagem !== 'undefined' && mensagem) { %>
+    <p><%= mensagem %></p>
+<% } %>
       
-        <p>><%= mensagem %></p>
-       
+        
          </div></form>
 </body>     
 </html>

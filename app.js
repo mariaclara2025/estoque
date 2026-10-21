@@ -12,19 +12,19 @@ app.use(express.urlencoded({extended:true}))
 //Define que as pastas a serem chamadas serão ".html"
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile)
-app.set('view engine', 'html')
+app.set('views engine', 'html')
 //================================================
 //         ROTAS DE USÚARIO
 //================================================
-app.get("/", (req,res)=> {
-    res.render("pagPrincipal")
-})
+app.get("/", (req, res) => {
+    res.render("formsLogin.html");
+});
 app.post("/usuarioLogin", async (req,res)=>{
     const {emailUser, senhaUser} = req.body
   
     if(emailUser && senhaUser ){
         try{
-           const usuario = await prisma.usuario.findMany({
+           const usuario = await prisma.usuario.findFirst({
             where:{email: emailUser}
            }); 
             const produtos = await prisma.produto.findMany({
@@ -40,14 +40,15 @@ app.post("/usuarioLogin", async (req,res)=>{
                   abaAtiva: "produtos"
              })
            } catch(erro){
-            return res.status(404).json({
+            return res.status(404).render("formsLogin.html",{
                 mensagem: "Erro ao logar, tente novamente!"
             })}
     }
     else{
-        return res.status(404).json({mensagem:
-           "Preencha os campos corretamente!"})
-    }
+        return res.status(404).render("formsLogin.html", {
+            mensagem: "Preencha os campos corretamente!"
+        });
+        }
 })
 app.get("/redLogin", (req,res)=> {
     return res.redirect("formsLogin.html")
@@ -55,35 +56,53 @@ app.get("/redLogin", (req,res)=> {
 app.get("redSenha", (req,res )=>{
     return res.redirect("redefinirSenha.tml")
 })
-app.get("redCriaruser", (req, res)=>{
-    return res.redirect("formsCadastro.html")
+app.get("/redCriaruser", (req, res)=>{
+    return res.render("formsCadastro.html")
 })
 
-app.post('/usuario', async (req,res) =>{
-    const {nomeUser, emailUser, senhaUser} = req.body
-    if(nomeUser && emailUser && senhaUser){
-         try{
-       usuario = await prisma.usuario.create({
-            data:{
-                nome: nomeUser,
-                email: emailUser,
-                senha: senhaUser
-            }
-        })
-         return res.status(200).render("pagPrincial.html", {usuario})
+app.post('/usuario', async (req, res) => {
+    const { nomeUser, emailUser, senhaUser } = req.body;
+    console.log("Primeira condicional")
+    if (nomeUser && emailUser && senhaUser) {
+          console.log("Primeira condicional rodou")
+        const emailExist = await prisma.usuario.findUnique({
+                where:{email: emailUser}
+            })
+            if(!emailExist){
+                   console.log("Segunda condicional rodou")
+                try {
+            const usuario = await prisma.usuario.create({
+                data: {
+                    nome: nomeUser,
+                    email: emailUser,
+                    senha: senhaUser
+                }
+            });
+
+            return res.status(201).render("pagPrincipal.html", {
+                usuario,
+                produtos:{}
+            });
+
+        } catch (erro) {
         
-    }catch(erro){
-       return res.status(504).json({
-                 mensagem:"Erro, tente novamente"
-        })
-    }
-    }else{
-       return res.json({ 
-            mensagem: "Erro, preencha os campos corretamente."
-        } )
-    }
-   
-})
+            return res.status(400).render("formsCadastro.html", {
+                mensagem: "Erro tente novamente!"
+            });
+            }
+        
+        }else{
+            return res.render("formsCadastro.html",
+                {
+                    mensagem: "Email Indisponivel,tente novamente!"
+                })
+        }
+    } else {
+        return res.status(400).render("formsCadastro.html", { 
+            mensagem: "Erro, preencha todos os campos corretamente."
+        });
+    }}
+)
 app.get("/redEditar", (req,res) => {
     return res.redirect("editarPerfil.html")
 })
@@ -188,13 +207,14 @@ app.get("/redProd/:id",async (req,res)=> {
         return res.status(404)
   }
 });
-app.post('/produtoCadastro', async (req,res) =>{
+app.post('/produtoCadastro/:id', async (req,res) =>{
     const {nomeProd, precoProd, categoriaProd, quantProd, valProd, fornProd} = req.body
    
     try{
          if(nomeProd && categoriaProd && quantProd && valProd && fornProd){
        await prisma.produto.create({
-           data:{
+           where:{usuarioId: Number(req.params.id)},
+        data:{
                 nome: nomeProd,
                 preco: precoProd,
                 categoria: categoriaProd,
@@ -221,7 +241,7 @@ app.put("/produto/:id", async (req,res) =>{
         if(nomeProd){
             try{
                 await prisma.produto.update({
-                    where:{id: id},
+                    where:{usuarioId: id},
                     data:{nome: nomeProd}
                 })
                 return res.status(200).json("Nome do produto atualizado com sucesso")
@@ -231,7 +251,7 @@ app.put("/produto/:id", async (req,res) =>{
             else if(precoProd){
                 try{
                     await prisma.produto.update({
-                        where:{id: id},
+                       where:{usuarioId: id},
                         data:{preco: precoProd}
                     })
                     return res.status(200).json("Preço do produto atualizado com sucesso")
@@ -242,7 +262,7 @@ app.put("/produto/:id", async (req,res) =>{
                     else if(quantProd){
                         try{
                             await prisma.produto.update({
-                                where:{id: id},
+                               where:{usuarioId: id},
                                 data:{quant: quantProd}
                             })
                             return res.status(200).json("Quantidade do produto atualizado com sucesso")
@@ -251,7 +271,7 @@ app.put("/produto/:id", async (req,res) =>{
                         }}else if(valProd){
                             try{
                                 await prisma.produto.update({
-                                    where:{id: id},
+                                   where:{usuarioId: id},
                                     data:{val: valProd}
                                 })
                                 return res.status(200).json("Validade do produto atualizado com sucesso")

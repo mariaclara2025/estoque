@@ -29,5 +29,14 @@
         </select>
         <p><%= mensagem %>/p>
    </div> </form>
+   <h2>Editar produtos</h2>
+   <form action="/produtoCadastro/<$= usuarioID %>_method=put" method="post">
+      <select name="infoNova" id="">
+         <option value="Nome">Nome</option>
+         <option value="precoProd">Preço</option>
+         <option value="quantProd">Quantidade</option>
+         <option value="valprod">Validade</option>
+      </select>
+   </form>
 </body>
 </html>
