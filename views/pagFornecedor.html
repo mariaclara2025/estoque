@@ -25,18 +25,23 @@
 
     <button type="submit">Salvar Fornecedor</button>
 </form>
-  <p><%=mensagem%></p>     
+   <% if (typeof mensagem !== 'undefined' && mensagem) { %>
+    <p><%= mensagem %></p>
+<% } %>    
        
-            <form action="deleteForn/<%=fornecedor.id%>?_method=delete>" method="get"><br>
-                <% if(fornecedor){ 
-                      <select name="forn id="">
+            <form action="/deleteForn/<%=usuario.id%>?_method=delete>" " method="get"><br>
+                 
+                      <select name="fornid">
             <% forEach.usuario.fornecedor(fornecedor =>{
-                  <option value="<%= fornecedor.cnpj %>"><%= fornecedor.cnpj %></option><br>
-        }) %>%
+                  <option value="<%= fornecedor.cnpj %>" value="fornid"><%= fornecedor.cnpj %></option><br>
+    <%    }) %>
          <br> </select>
          <button type="submit" id="excluir">Excluir</button>
-       
+        
             </form> 
+            <% if (typeof mensagemDel !== 'undefined' && mensagemDel) { %>
+    <p><%= mensagemDel %></p>
+<% } %>  
               <%  }else{ %>
                 <select name="" id="" disabled="disabled">
                     <option value="">Nenhum usuario cadastrado</option>
@@ -45,7 +50,25 @@
             <%  } %>
                
             </form> 
-        
+        <form action="/fornAtualizar/<%=usuario.id%>_method=put" method="get">
+                         <select name="fornid">
+            <% forEach.usuario.fornecedor(fornecedor =>{
+                  <option value="<%= fornecedor.cnpj %>" value="fornid"><%= fornecedor.cnpj %></option><br>
+    <%    }) %>
+         <br> </select>
+                      <select name="info">
+           
+                  <option name="nome">Nome</option><br>
+                <option name="cnpj">CNPJ</option>
+                <option name="email">Email </option>
+          </select>
+         
+         <label for="">Informação </label>
+         <input type="text" name="infoNova" id="" placeholder="Digite a nova Informação">
+        </form>
+   <% if (typeof  mensagemPut !== 'undefined' &&  mensagemPut) { %>
+    <p><%= mensagemPut %></p>
+<% } %>  
     </div>
 </body>
 </html>

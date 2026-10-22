@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/style.css">
+  
     <style>
         
-/* Topo */
+
 header {
     display: flex;
     justify-content: space-around;
@@ -30,14 +30,12 @@ header input {
     text-decoration: none;
 }
 
-/* Foto do perfil */
 .sidebar-btn {
     border: none;
     background: none;
     cursor: pointer;
 }
 
-/* Conteúdo */
 main {
     padding: 20px;
 }
@@ -52,7 +50,6 @@ main {
     text-decoration: none;
 }
 
-/* Cards dos produtos */
 .card-produto {
     display: inline-block;
     vertical-align: top;
@@ -63,7 +60,6 @@ main {
     border-radius: 8px;
 }
 
-/* Botão de detalhes */
 .btn-detalhes {
     background: rgb(60, 60, 232);
     color: white;
@@ -73,10 +69,7 @@ main {
     cursor: pointer;
 }
 
-/* Sidebar */
-.sidebar {
-    transition: right 0.3s;
-}
+
 
 /* Detalhes sobrepostos */
 .model {
@@ -91,26 +84,7 @@ main {
     margin: 0;
 }
 
-/* Celular */
-@media (max-width: 600px) {
-    header {
-        flex-direction: column;
-    }
 
-    header form {
-        display: flex;
-    }
-
-    header input {
-        width: 100%;
-        min-width: 0;
-    }
-
-    .card-produto {
-        display: block;
-        width: auto;
-    }
-}
 
     </style>
     <title>Estoque Aqui</title>
@@ -138,13 +112,13 @@ main {
             <!-- Sidebar / Gaveta de Perfil -->
             <div id="sidebar" class="sidebar">
                 <button onclick="fecharSidebar()">❌</button>
-                <a href="/redEditar">Editar perfil</a>
+                <a href="/pagEditUser/<%=usuario.id%>">Editar perfil</a>
                 <h3>Meu perfil</h3>
                 <h4>Nome:</h4>
                 <p><%= usuario.nome %></p>
                 <h4>Email:</h4>
                 <p><%= usuario.email %></p>
-                <a href="/pagEditUser/<%= usuario.id %>">Editar Informações/a>
+              
                 <form action="/usuario/<%= usuario.id %>?_method=DELETE" method="POST">
                     <button type="submit" class="excluir">Excluir usuário</button>
                 </form>
@@ -153,7 +127,7 @@ main {
 <% } %>
       
                 
-                <p>Informações sensíveis não serão expostas!</p>
+              <br>  <p>Informações sensíveis não serão expostas!</p>
             </div>
             
             <a href="/redProd/<%= usuario.id %>" id="cadProd">Cadastrar produto</a>

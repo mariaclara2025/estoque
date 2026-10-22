@@ -21,34 +21,48 @@
   <label for="">Data de validade</label><br>
   <input type="datetime" name="data_val" id=""><br>
   <input type="submit" value="Cadastrar" class="entrar"><br>
-  <label>Fornecedor</label>
+  <label>Fornecedor</label><br>
      <select name="fornProd" id="">
             <% usuario.fornecedor.forEach( fornecedor=>
             <option value="<%=fornecedor.id%>" ><%= fornecedor.cnpj -- fornecedor.nome %></option>
             )
-        </select>
-       <% if (typeof mensagem !== 'undefined' && mensagem) { %>
-    <p><%= mensagem %></p>
+        </select><br>
+       <% if (typeof mensagemprod !== 'undefined' && mensagemprod) { %>
+    <p><%= mensagemprod %></p>
 <% } %>
    </div> </form>
+
    <h2>Editar produtos</h2>
-   <form action="/produto/<$= usuario.id %>_method=put" method="post">
-     <label for="">Qual produto deseja atualizar</label>
-     <% if(produtos){ %>
-           <% produtos.forEach(produto =>
-             <option value="<%=produto.id%>" ><%= produto.nome %></option>
-            )
-        </select>
-         <%  )%>
-         <label for="">Qual campo sera atualizado:</label>
-          <select name="info" id="">
-         <option value="Nome">Nome</option>
-         <option value="precoProd">Preço</option>
-         <option value="quantProd">Quantidade</option>
-         <option value="valprod">Validade</option>
-      </select>
-     <%}%>
-     <input type="text" name="infoNova" id="">
-   </form>
+   <div >
+  <form action="/produto/<%= usuario.id %>?_method=PUT" class="forms" method="POST">
+  <label for="produtoSelect">Qual produto deseja atualizar?</label>
+  
+  <% if (produtos) { %>
+    <select name="produtoId" id="produtoSelect">
+      <% produtos.forEach(produto => { %>
+        <option value="<%= produto.id %>"><%= produto.nome %></option>
+      <% }) %>
+    </select>
+    <br><br>
+
+    <label for="infoSelect">Qual campo será atualizado:</label>
+    <select name="info" id="info">
+      <option value="nomeProd">Nome</option>
+      <option value="precoProd">Preço</option>
+      <option value="quantProd">Quantidade</option>
+      <option value="valProd">Validade</option>
+    </select>
+    <br><br>
+
+    <label for="infoNova">Novo valor:</label>
+    <input type="text" name="infoNova" id="infoNova" required>
+    <br><br>
+
+    <button type="submit">Atualizar</button>
+  <% } %>
+</form>
+  <% if (typeof mensagemPut !== 'undefined' && mensagemPut) { %>
+    <p><%= mensagemPut %></p>
+   </div>
 </body>
 </html>
