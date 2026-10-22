@@ -13,16 +13,16 @@ app.use(express.urlencoded({extended:true}))
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile)
 app.set('views engine', 'html')
+app.use('/static', express.static('static'));
+
 //================================================
 //         ROTAS DE USÚARIO
 //================================================
 app.get("/", (req, res) => {
-    res.render("pagPrincipal.html");
+    res.render("formsLogin.html");
 });
 
-app.get("/redLogin", (req,res)=> {
-    return res.redirect("formsLogin.html")
-})
+
 app.post("/usuarioLogin", async (req,res)=>{
     const {emailUser, senhaUser} = req.body
     console.log(emailUser, senhaUser)
@@ -30,10 +30,12 @@ app.post("/usuarioLogin", async (req,res)=>{
     if(emailUser && senhaUser ){
         console.log("Rodou a condicional")
         try{
+            //read em usuarios
            const usuario = await prisma.usuario.findFirst({
             where:{email: emailUser}
            });
            if(senhaUser == usuario.senha){
+            //read em produtos
                 const produtos = await prisma.produto.findMany({
             where:{usuarioId: usuario.id},
               include: {
@@ -68,6 +70,7 @@ app.get("/redCriaruser", (req, res)=>{
 })
 
 app.post('/usuario', async (req, res) => {
+    //create em usuarios
     const { nomeUser, emailUser, senhaUser } = req.body;
     console.log("Primeira condicional")
     if (nomeUser && emailUser && senhaUser) {
@@ -113,49 +116,56 @@ app.post('/usuario', async (req, res) => {
 app.get("/redEditar", (req,res) => {
     return res.redirect("editarPerfil.html")
 })
+app.get("/pagEditUser/:id", (req,res)=>{
+    const usuario = prisma.usuario.findMany({ where:{id: Number(req.params.id)}})
+       return res.render("editarperfil.html",{usuario})
+
+})
+//update em usuario
 app.put('/usuario/:id', async (req,res)=>{
+    const Info = req.body
     const novaInfo = req.body
     const idUser = req.params.id
-    if(novaInfo){
-        if(novaInfo == "nome"){
+    if(Info){
+        if(info == "nome"){
             try {  await prisma.usuario.update({
                    where : {id: idUser},
                     data:{nome: novaInfo}
             }
                  
                 )
-                return res.status(200).json({
+                return res.status(200).render("editarperfil.html",{
                     mensagem: "Nome atualizado com sucesso"
                 }
                    ) 
             }catch(erro){
-               return res.status(404).json({
+               return res.status(404).render("editarperfil.html",{
                     erro: "Erro ao atualizar nome"
                 })
             }
         }
-        else if(novaInfo == 'senha'){
+        else if(Info == 'senha'){
              try{   await prisma.usuario.update(
                    { where:{id: idUser},
-                    data:{senha: senhaUser}}
+                    data:{senha: novaInfo}}
                 )
-                return res.status(200).json({
+                return res.status(200).render("editarperfil.html",{
                     mensagem:  "Senha atualizada com sucesso"
                 }
                   )
 
             }catch(erro){
-                return res.status(404).json({
+                return res.status(404).render("editarperfil.html",{
                     erro: "Erro ao atualizar senha"
                 })
             }
         }
-        else if(novaInfo == 'email'){
+        else if(Info == 'email'){
             const emailExist = prisma.usuario.findUnique({
-                where:{emmail: emailUser}
+                where:{email: novaInfo}
             })
             if(emailExist ){
-                return res.status(404).json({
+                return res.status(404).render("editarperfil.html",{
                     mensagem:"Email indisponivel, tente novamente!"
                 }
                     )
@@ -164,32 +174,32 @@ app.put('/usuario/:id', async (req,res)=>{
                 try{
                      await prisma.usuario.update({
                      where:{id:idUser},
-                    data:{email : emailUser}
+                    data:{email : novaInfo}
                     })
-                    return res.status(200).json({
+                    return res.status(200).render("editarperfil.html",{
                         mensagem:"Email atualizado com sucesso"
                     }
                         )
                 } catch(erro){
-                    return res.status(404).json("Erro ao atualizar email")
+                    return res.status(404).render("editarperfil.html",{mensagem:"Erro ao atualizar email"})
                 }
             }
         }
     }else{
-      return res.status(404).json(
+      return res.status(404).render("editarperfil.html",
            { mensagem: "Erro, preencha os campos corretamente."}
         )
     }
 })
-
+// delete em usuario
 app.delete('/usuario/:id', async (req,res) =>{
     const idUser = req.params.id
     try{
      await prisma.usuario.delete(
         { where:{id: idUser}}
-     ); return res.redirect("login.html")
+     ); return res.render("formsLogin.html")
     }catch{
-        return res.status(404).json(
+        return res.status(404).render("pagPrincipal.html",
             {
                 mensagem: "Erro ao excluir usúario"
             })
@@ -200,27 +210,26 @@ app.delete('/usuario/:id', async (req,res) =>{
 //================================================
 app.get("/redProd/:id",async (req,res)=> {
     const idUser = req.params.id
-    try{
-         const usuario = await prisma.usuario.findMany({
+    const usuario = prisma.usuario.findMany({
         where:{id: idUser},
         include:{
             fornecedor: true
         }
+    })
+    const produtos = prisma.Produto.findMany({
+        where:{usuarioId:idUser}
+    })
+   return res.status(200).render("pagProduto.html",{
+   usuario, produtos
    })
-    return res.render("pagProduto",
-        {usuario}
-    )
-    }catch(erro){
-        return res.status(404)
-  }
 });
-app.post('/produtoCadastro/:id', async (req,res) =>{
+app.post('/produtoCadastro', async (req,res) =>{
     const {nomeProd, precoProd, categoriaProd, quantProd, valProd, fornProd} = req.body
-   
+   const idUser = req.body.usuarioId
     try{
          if(nomeProd && categoriaProd && quantProd && valProd && fornProd){
-       await prisma.produto.create({
-           where:{usuarioId: Number(req.params.id)},
+       await prisma.Produto.create({
+           where:{usuarioId: idUser},
         data:{
                 nome: nomeProd,
                 preco: precoProd,
@@ -308,44 +317,43 @@ app.delete('/produto/:id', async (req,res) =>{
 // =====================================
 app.get("/redForn/:id",async (req,res) =>{
     const idUser = req.params.id
-     
-    const forn = await prisma.Produto.findMany(
-        {where:{id:idUser},
-        data: {
-            fornecedorId
-        }
-
-        })
-    const fornecedores = prisma.fornecedor.findMany({
-        
+     try{
+         const usuario = await prisma.usuario.findUnique({
+        where: { id: Number(idUser) }
+    });
+     return res.render("pagFornecedor.html", {
+      usuario
     })
-    return res.render("pagFornecedor.html", {
-       forn
-    })
+     }catch(erro){
+        return console.log("Erro ao redirecionar.")
+     }
 })
-app.post("/fornecedor/:id", async (req,res)=> { 
-    const {nome,email,cnpj,tel} = req.body
+app.get("editForn", (req,res)=>{
+    return res.render()
+})
+app.post("/fornecedor", async (req, res) => {
+    const { nome, cnpj, telefone, usuarioId } = req.body;
     try{
-        
-       await prisma.fornecedor.create({
-        data:{
-            nome: nome,
-            email: email,
-            cnpj: cnpj,
-            telefone: tel,
-            usuario:{
-                connect:{
-                    id: Number(req.params.id)
-                }
+  const fornecedor =  await prisma.fornecedor.create({
+        data: {
+            nome,
+            cnpj,
+            telefone,
+            
+            usuario: {
+                connect: { id: Number(usuarioId) }
             }
         }
-       })
+    });
     }catch(erro){
-        return res.status(404).json({
-            mensagem: "Erro ao adicionar!"
-        })
+        return res.render("pagFornecedor.html",
+            { mensagem: "Não foi possivel cadastrar fornecedor, tente novamente!"}
+        )
     }
-})
+ 
+
+   
+});
 app.put("fornAtualizar/:id&idForn",async (req,res)=>{
    try{
       const id = req.params.id

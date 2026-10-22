@@ -11,28 +11,41 @@
          <h1>Estoque-aqui</h1>
     <h2>Cadastro de fornecedores</h2>
      <div class="forms">
-    <form action="/fornecedor/<%= usuarioID %>" method="post">
-  
-        <label for="">Nome</label><br>
-        <input type="text" name="nome" id=""><br>
-        <label for="">email</label>
-        <input type="email" name="email" id="email"><br>
-        <label for="">CNPJ</label><br>
-        <input type="text" name="cnpj" id="cnpj"><br>
-        <label for="">Telefone</label><br>
-        <input type="text" name="tel" id=""><br>
+   <form action="/fornecedor" method="POST">
+    <input type="hidden" name="usuario.idUser" value="<%= usuario.id %>">
+
+    <label for="nome">Nome do Fornecedor:</label>
+    <input type="text" name="nome" required>
+
+    <label for="cnpj">CNPJ:</label>
+    <input type="text" name="cnpj" required>
+
+    <label for="telefone">Telefone:</label>
+    <input type="text" name="telefone" required>
+
+    <button type="submit">Salvar Fornecedor</button>
+</form>
+  <p><%=mensagem%></p>     
        
-        
-        <input type="submit" value="Cadastrar" class="entrar"><br>
             <form action="deleteForn/<%=fornecedor.id%>?_method=delete>" method="get"><br>
-        <select name="forn id="">
+                <% if(fornecedor){ 
+                      <select name="forn id="">
             <% forEach.usuario.fornecedor(fornecedor =>{
                   <option value="<%= fornecedor.cnpj %>"><%= fornecedor.cnpj %></option><br>
-        })
-         <br> <input type="submit" value="Excluir"><br>
-        </select>
+        }) %>%
+         <br> </select>
+         <button type="submit" id="excluir">Excluir</button>
+       
             </form> 
-              </form
+              <%  }else{ %>
+                <select name="" id="" disabled="disabled">
+                    <option value="">Nenhum usuario cadastrado</option>
+                </select>
+                <button disabled="disabled">Excluir</button>
+            <%  } %>
+               
+            </form> 
+        
     </div>
 </body>
 </html>

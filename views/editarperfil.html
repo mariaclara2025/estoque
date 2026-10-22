@@ -14,18 +14,18 @@
     
     <h2>Editar perfil</h2>
     <div class="forms">
-            <form action="/usuario/: <%= usuario.id %>?_method=put" method="post">
-        <select name="infoNova" id="infoNova" style=" padding: 10px; border-radius: 15px; outline: none;">
+            <form action="/usuario/<%= usuario.id %>?_method=put" method="post">
+        <select name="info" id="infoNova" style=" padding: 10px; border-radius: 15px; outline: none;">
             <option value="email">Email</option>
             <option value="senha">senha</option>
             <option value="nome">Nome</option>
         </select>
-     
-        
-                <input type="text" name="novaInfo" required id="" placeholder="Digite a nova informação"><br>
+        <input type="text" name="novaInfo" required id="" placeholder="Digite a nova informação"><br>
            <input type="submit" class="entrar">
-            <p><%= mensagem %></p>
-    </form>
+        <% if (typeof mensagem !== 'undefined' && mensagem) { %>
+    <p><%= mensagem %></p>
+<% } %>
+        </form>
    
     </div>
 
