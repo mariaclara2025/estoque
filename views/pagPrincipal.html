@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="static/style.css">
     <title>Estoque Aqui</title>
 </head>
 <body>
@@ -40,55 +40,58 @@
                     <button type="submit" class="excluir">Excluir usuário</button>
                 </form>
                 
-                <% if (typeof erroExcluir !== 'undefined') { %>
-                    <p><%= erroExcluir %></p>
-                <% } %>
+              
                 <p>Informações sensíveis não serão expostas!</p>
             </div>
-
-            <!-- Seção de Produtos -->
-            <h2>Produtos em estoque</h2>
             <a href="/redProd/<%= usuario.id %>" id="cadProd">Cadastrar produto</a>
+            
             <a href="/redForn/<%= usuario.id %>" id="cadProd">Cadastrar fornecedor</a>
+            
+           
+          
+             <h2>Produtos em estoque</h2>
+  
+         <% if (typeof produtos !== 'undefined' && produtos && produtos.length > 0) { %>
+    <% produtos.forEach(produto => { %>
+        <div class="card-produto">
+            <h3>Nome: <%= produto.nome %></h3>
+            <p>Fornecedor: <%= produto.fornecedor ? produto.fornecedor.nome : 'N/A' %></p>
+            <p>Quantidade: <%= produto.quant %></p>
+            <p>Preço: R$ <%= produto.preco %></p>
+            
+            <form action="/produto/<%= produto.id %>?_method=DELETE" method="POST" style="display:inline;">
+                <button type="submit" class="delete">Excluir Produto</button>
+            </form>
 
-            <% produtos.forEach(produto => { %>
-                <div class="card-produto">
-                    <h3>Nome: <%= produto.nome %></h3>
-                    <p>Fornecedor: <%= produto.fornecedor ? produto.fornecedor.nome : 'N/A' %></p>
-                    <p>Quantidade: <%= produto.quant %></p>
-                    <p>Preço: <%= produto.preco %></p>
-                    
-                    <form action="/produto/<%= produto.id %>?_method=DELETE" method="POST" style="display:inline;">
-                        <button type="submit" class="delete">Excluir Produto</button>
-                    </form>
+            <a href="/produto/<%= produto.id %>/editar" class="atualizar">Editar</a>
+            
+            <button onclick="abrirDetalhes('<%= produto.id %>')" class="btn-detalhes">Ver detalhes</button>
+        </div>
 
-                    <a href="/produto/<%= produto.id %>/editar" class="atualizar">Editar</a>
-                    
-                    <button onclick="abrirDetalhes('<%= produto.id %>')" class="btn-detalhes">Ver detalhes</button>
-                </div>
+        <!-- Modal de Detalhes -->
+        <div id="details<%= produto.id %>" class="model">
+            <div class="details">
+                <button onclick="fecharDetalhes('<%= produto.id %>')">❌</button>
+                <p><strong>Data de validade:</strong> <%= new Date(produto.data_val).toLocaleDateString('pt-BR') %></p>
+                <p><strong>Dados do fornecedor:</strong></p>
+                <p><strong>CNPJ:</strong> <%= produto.fornecedor ? produto.fornecedor.cnpj : 'N/A' %></p>
+                <p><strong>Telefone:</strong> <%= produto.fornecedor ? produto.fornecedor.telefone : 'N/A' %></p>
+            </div>
+        </div>
+    <% }); %>
 
-                <!-- Modal de Detalhes -->
-                <div id="details<%= produto.id %>" class="model">
-                    <div class="details">
-                        <button onclick="fecharDetalhes('<%= produto.id %>')">❌</button>
-                        <p><strong>Data de validade:</strong> <%= produto.data_val %></p>
-                        <p><strong>Dados do fornecedor:</strong></p>
-                        <p><strong>CNPJ:</strong> <%= produto.fornecedor ? produto.fornecedor.cnpj : 'N/A' %></p>
-                        <p><strong>Telefone:</strong> <%= produto.fornecedor ? produto.fornecedor.telefone : 'N/A' %></p>
-                    </div>
-                </div>
-            <% }); %>
-
-        <% } else { %>
-            <hr>
-            <h3>Faça o login para cadastrar seus produtos.</h3>
-        <% } %>
+<% } else { %>
+    <hr>
+    <h3>Nenhum produto cadastrado ou faça login para visualizar seu estoque.</h3>
+<% } %>
     </main>
 
-    <footer>
+    <footer><hr>
         <p>Programação Web II - Maria Clara Araújo Santos</p>
     </footer>
 
+
+</body>
     <script>
         function abrirSidebar() {
             document.getElementById("sidebar").classList.add("ativa");
@@ -106,5 +109,4 @@
             document.getElementById('details' + id).style.display = "none";
         }
     </script>
-</body>
 </html>

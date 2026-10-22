@@ -17,45 +17,52 @@ app.set('views engine', 'html')
 //         ROTAS DE USÚARIO
 //================================================
 app.get("/", (req, res) => {
-    res.render("formsLogin.html");
+    res.render("pagPrincipal.html");
 });
+
+app.get("/redLogin", (req,res)=> {
+    return res.redirect("formsLogin.html")
+})
 app.post("/usuarioLogin", async (req,res)=>{
     const {emailUser, senhaUser} = req.body
-  
+    console.log(emailUser, senhaUser)
+    console.log("testando")
     if(emailUser && senhaUser ){
+        console.log("Rodou a condicional")
         try{
            const usuario = await prisma.usuario.findFirst({
             where:{email: emailUser}
-           }); 
-            const produtos = await prisma.produto.findMany({
+           });
+           if(senhaUser == usuario.senha){
+                const produtos = await prisma.produto.findMany({
             where:{usuarioId: usuario.id},
               include: {
-                fornecedor: true
-            }
+                fornecedor: true }
            })
-          
+           console.log("return")
              return  res.status(200).render("pagPrincipal.html",{
                  usuario,
-                  produtos,
-                  abaAtiva: "produtos"
+                  produtos
              })
+         
+           }else{
+            return res.status(404).render("formsLogin.html",
+                {mensagem : "Email ou senha incorreto!"}
+            )
+           }
+        
            } catch(erro){
             return res.status(404).render("formsLogin.html",{
                 mensagem: "Erro ao logar, tente novamente!"
             })}
     }
     else{
+        console.log("Rodou a segunda")
         return res.status(404).render("formsLogin.html", {
             mensagem: "Preencha os campos corretamente!"
         });
         }
-})
-app.get("/redLogin", (req,res)=> {
-    return res.redirect("formsLogin.html")
-})
-app.get("redSenha", (req,res )=>{
-    return res.redirect("redefinirSenha.tml")
-})
+}) 
 app.get("/redCriaruser", (req, res)=>{
     return res.render("formsCadastro.html")
 })
@@ -69,7 +76,7 @@ app.post('/usuario', async (req, res) => {
                 where:{email: emailUser}
             })
             if(!emailExist){
-                   console.log("Segunda condicional rodou")
+                 
                 try {
             const usuario = await prisma.usuario.create({
                 data: {
@@ -81,7 +88,7 @@ app.post('/usuario', async (req, res) => {
 
             return res.status(201).render("pagPrincipal.html", {
                 usuario,
-                produtos:{}
+                produtos:[]
             });
 
         } catch (erro) {
@@ -309,6 +316,9 @@ app.get("/redForn/:id",async (req,res) =>{
         }
 
         })
+    const fornecedores = prisma.fornecedor.findMany({
+        
+    })
     return res.render("pagFornecedor.html", {
        forn
     })
