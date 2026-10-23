@@ -37,6 +37,8 @@
        }
        .entrar{
         margin-top: 20px;
+       background: rgba(60, 60, 232);
+          color: white
        }
         button img {
           width: 30px;
@@ -45,20 +47,16 @@
         }
       /* Estilo base da sidebar sobreposta */
 .sidebar {
-    position: fixed;
-    top: 0;
-    right: -300px; /* Esconde a sidebar fora da tela à direita */
-    width: 300px;
-    height: 100vh;
-    background-color: #ffffff;
-    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+      border: none;
+    background: none;
+    cursor: pointer;
+   
+   
 }
 
 /* Classe ativada pelo JavaScript */
 .sidebar.ativa {
-    right: 0; /* Faz a sidebar deslizar para dentro da tela */
-}
+    right: 0; 
         .model{
           display: none;
           position: fixed;
@@ -92,21 +90,18 @@
           border-radius: 5px;
           cursor: pointer;
         }
-        .entrar{
-          background-color:  rgb(60, 60, 232);
-          color: white
-        }
+       
         h1{
           text-align: center;
           font-family: Arial, sans-serif;
         }
         header{
           display: flex;
-          justify-content:center;
-          align-items: center;
-          padding: 10px 20px;
-          background-color: #f5f5f5;
-          border-bottom: 1px solid #ccc;  
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #f5f5f5; 
         }
 
 
@@ -137,14 +132,14 @@ header input {
     text-decoration: none;
 }
 
-/* Foto do perfil */
+
 .sidebar-btn {
     border: none;
     background: none;
     cursor: pointer;
 }
 
-/* Conteúdo */
+
 main {
     padding: 20px;
 }
@@ -159,7 +154,7 @@ main {
     text-decoration: none;
 }
 
-/* Cards dos produtos */
+
 .card-produto {
     display: inline-block;
     vertical-align: top;
@@ -170,7 +165,7 @@ main {
     border-radius: 8px;
 }
 
-/* Botão de detalhes */
+
 .btn-detalhes {
     background: rgb(60, 60, 232);
     color: white;
@@ -180,12 +175,12 @@ main {
     cursor: pointer;
 }
 
-/* Sidebar */
+
 .sidebar {
     transition: right 0.3s;
 }
 
-/* Detalhes sobrepostos */
+
 .model {
     top: 50%;
     left: 50%;
@@ -196,25 +191,4 @@ main {
 
 .details {
     margin: 0;
-}
-
-/* Celular */
-@media (max-width: 600px) {
-    header {
-        flex-direction: column;
-    }
-
-    header form {
-        display: flex;
-    }
-
-    header input {
-        width: 100%;
-        min-width: 0;
-    }
-
-    .card-produto {
-        display: block;
-        width: auto;
-    }
 }

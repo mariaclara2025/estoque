@@ -12,34 +12,34 @@
     
     <div class="forms">
       
-        <form action="/fornecedor" method="POST">
-            <input type="hidden" name="usuarioId" value="<%= usuario?.id %>">
+        <form action="/fornecedor/<%= usuario.id %>" method="POST">
+           
 
-            <label for="nome">Nome do Fornecedor:</label>
+            <label>Nome do Fornecedor:</label><br>
             <input type="text" name="nome" required><br>
-
-            <label for="cnpj">CNPJ:</label>
+            <label>Email:</label><br>
+            <input type="text" name="email" id=""><br>
+            <label >CNPJ:</label><br>
             <input type="text" name="cnpj" required><br>
-
-            <label for="telefone">Telefone:</label>
+            <label>Telefone:</label><br>
             <input type="text" name="telefone" required><br>
 
-            <button type="submit">Salvar Fornecedor</button>
+            <button type="submit" class="entrar">Salvar Fornecedor</button>
         </form>
 
-        <% if (typeof mensagem !== 'undefined' && mensagem) { %>
+             </div>
+             <% if (typeof mensagem !== 'undefined' && mensagem) { %>
             <p><%= mensagem %></p>
         <% } %>
-
         <hr>
 
        
         <h2>Excluir Fornecedor</h2>
-        <% if (usuario?.fornecedor && usuario.fornecedor.length > 0) { %>
+        <% if (fornecedor &&fornecedor.length > 0) { %>
             <form action="/deleteForn/<%= usuario.id %>?_method=DELETE" method="POST">
                 <label for="fornid">Selecione o Fornecedor:</label>
                 <select name="fornid">
-                    <% usuario.fornecedor.forEach(fornecedor => { %>
+                    <% fornecedor.forEach(fornecedor => { %>
                         <option value="<%= fornecedor.id %>"><%= fornecedor.cnpj %> - <%= fornecedor.nome %></option>
                     <% }) %>
                 </select>
@@ -60,11 +60,11 @@
 
       
         <h2>Atualizar Fornecedor</h2>
-        <% if (usuario?.fornecedor && usuario.fornecedor.length > 0) { %>
+        <% if (fornecedor && fornecedor.length > 0) { %>
             <form action="/fornAtualizar/<%= usuario.id %>?_method=PUT" method="POST">
                 <label for="fornid">Fornecedor:</label>
                 <select name="fornid">
-                    <% usuario.fornecedor.forEach(fornecedor => { %>
+                    <% fornecedor.forEach(fornecedor => { %>
                         <option value="<%= fornecedor.id %>"><%= fornecedor.cnpj %> - <%= fornecedor.nome %></option>
                     <% }) %>
                 </select>
@@ -88,6 +88,6 @@
         <% if (typeof mensagemPut !== 'undefined' && mensagemPut) { %>
             <p><%= mensagemPut %></p>
         <% } %>
-    </div>
+   
 </body>
 </html>
