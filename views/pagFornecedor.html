@@ -1,74 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="/static/style.css">
     <title>Cadastro Fornecedor</title>
 </head>
 <body>
-    
-         <h1>Estoque-aqui</h1>
+    <h1>Estoque-aqui</h1>
     <h2>Cadastro de fornecedores</h2>
-     <div class="forms">
-   <form action="/fornecedor" method="POST">
-    <input type="hidden" name="usuario.idUser" value="<%= usuario.id %>">
+    
+    <div class="forms">
+      
+        <form action="/fornecedor" method="POST">
+            <input type="hidden" name="usuarioId" value="<%= usuario?.id %>">
 
-    <label for="nome">Nome do Fornecedor:</label>
-    <input type="text" name="nome" required>
+            <label for="nome">Nome do Fornecedor:</label>
+            <input type="text" name="nome" required><br>
 
-    <label for="cnpj">CNPJ:</label>
-    <input type="text" name="cnpj" required>
+            <label for="cnpj">CNPJ:</label>
+            <input type="text" name="cnpj" required><br>
 
-    <label for="telefone">Telefone:</label>
-    <input type="text" name="telefone" required>
+            <label for="telefone">Telefone:</label>
+            <input type="text" name="telefone" required><br>
 
-    <button type="submit">Salvar Fornecedor</button>
-</form>
-   <% if (typeof mensagem !== 'undefined' && mensagem) { %>
-    <p><%= mensagem %></p>
-<% } %>    
-       
-            <form action="/deleteForn/<%=usuario.id%>?_method=delete>" " method="get"><br>
-                 
-                      <select name="fornid">
-            <% forEach.usuario.fornecedor(fornecedor =>{
-                  <option value="<%= fornecedor.cnpj %>" value="fornid"><%= fornecedor.cnpj %></option><br>
-    <%    }) %>
-         <br> </select>
-         <button type="submit" id="excluir">Excluir</button>
-        
-            </form> 
-            <% if (typeof mensagemDel !== 'undefined' && mensagemDel) { %>
-    <p><%= mensagemDel %></p>
-<% } %>  
-              <%  }else{ %>
-                <select name="" id="" disabled="disabled">
-                    <option value="">Nenhum usuario cadastrado</option>
-                </select>
-                <button disabled="disabled">Excluir</button>
-            <%  } %>
-               
-            </form> 
-        <form action="/fornAtualizar/<%=usuario.id%>_method=put" method="get">
-                         <select name="fornid">
-            <% forEach.usuario.fornecedor(fornecedor =>{
-                  <option value="<%= fornecedor.cnpj %>" value="fornid"><%= fornecedor.cnpj %></option><br>
-    <%    }) %>
-         <br> </select>
-                      <select name="info">
-           
-                  <option name="nome">Nome</option><br>
-                <option name="cnpj">CNPJ</option>
-                <option name="email">Email </option>
-          </select>
-         
-         <label for="">Informação </label>
-         <input type="text" name="infoNova" id="" placeholder="Digite a nova Informação">
+            <button type="submit">Salvar Fornecedor</button>
         </form>
-   <% if (typeof  mensagemPut !== 'undefined' &&  mensagemPut) { %>
-    <p><%= mensagemPut %></p>
-<% } %>  
+
+        <% if (typeof mensagem !== 'undefined' && mensagem) { %>
+            <p><%= mensagem %></p>
+        <% } %>
+
+        <hr>
+
+       
+        <h2>Excluir Fornecedor</h2>
+        <% if (usuario?.fornecedor && usuario.fornecedor.length > 0) { %>
+            <form action="/deleteForn/<%= usuario.id %>?_method=DELETE" method="POST">
+                <label for="fornid">Selecione o Fornecedor:</label>
+                <select name="fornid">
+                    <% usuario.fornecedor.forEach(fornecedor => { %>
+                        <option value="<%= fornecedor.id %>"><%= fornecedor.cnpj %> - <%= fornecedor.nome %></option>
+                    <% }) %>
+                </select>
+                <button type="submit" id="excluir">Excluir</button>
+            </form>
+        <% } else { %>
+            <select disabled>
+                <option>Nenhum fornecedor cadastrado</option>
+            </select>
+            <button disabled>Excluir</button>
+        <% } %>
+
+        <% if (typeof mensagemDel !== 'undefined' && mensagemDel) { %>
+            <p><%= mensagemDel %></p>
+        <% } %>
+
+        <hr>
+
+      
+        <h2>Atualizar Fornecedor</h2>
+        <% if (usuario?.fornecedor && usuario.fornecedor.length > 0) { %>
+            <form action="/fornAtualizar/<%= usuario.id %>?_method=PUT" method="POST">
+                <label for="fornid">Fornecedor:</label>
+                <select name="fornid">
+                    <% usuario.fornecedor.forEach(fornecedor => { %>
+                        <option value="<%= fornecedor.id %>"><%= fornecedor.cnpj %> - <%= fornecedor.nome %></option>
+                    <% }) %>
+                </select>
+
+                <label for="info">Campo a alterar:</label>
+                <select name="info">
+                    <option value="nome">Nome</option>
+                    <option value="cnpj">CNPJ</option>
+                    <option value="telefone">Telefone</option>
+                </select>
+
+                <label for="infoNova">Nova Informação:</label>
+                <input type="text" name="infoNova" placeholder="Digite a nova Informação" required>
+
+                <button type="submit">Atualizar</button>
+            </form>
+        <% } else { %>
+            <p>Nenhum fornecedor disponível para edição.</p>
+        <% } %>
+
+        <% if (typeof mensagemPut !== 'undefined' && mensagemPut) { %>
+            <p><%= mensagemPut %></p>
+        <% } %>
     </div>
 </body>
 </html>

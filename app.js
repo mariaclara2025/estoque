@@ -14,7 +14,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile)
 app.set('views engine', 'html')
 app.use('static', express.static('static'));
-
+app.use((req, res, next) => {
+    console.log(` Método: ${req.method} | URL: ${req.url}`);
+    next();
+});
 //================================================
 //         ROTAS DE USÚARIO
 //================================================
@@ -42,6 +45,7 @@ app.post("/usuarioLogin", async (req,res)=>{
                 fornecedor: true }
            })
            console.log("return")
+           console.log(usuario.id)
              return  res.status(200).render("pagPrincipal.html",{
                  usuario,
                   produtos
@@ -88,7 +92,7 @@ app.post('/usuario', async (req, res) => {
                     senha: senhaUser
                 }
             });
-
+            
             return res.status(201).render("pagPrincipal.html", {
                 usuario,
                 produtos:[]
@@ -114,43 +118,52 @@ app.post('/usuario', async (req, res) => {
     }}
 )
 
-app.get("/pagEditUser/:id", (req,res)=>{
-    const usuario = prisma.usuario.findMany({ where:{id: Number(req.params.id)}})
-       return res.render("editarperfil.html",{usuario})
+app.get("/pagEditUser/:id",async (req,res)=>{
+    const id =Number(req.params.id)
+    console.log(id)
+    const usuario = await prisma.usuario.findUnique({ where:{id: id}})
+    console.log("acessando usuario", usuario.id) 
+    console.log(usuario)  
+    return res.render("editarperfil.html",{ usuario })
 
 })
 //update em usuario
 app.put('/usuario/:id', async (req,res)=>{
-    const Info = req.body
-    const novaInfo = req.body
-    const idUser = req.params.id
-    if(Info){
+console.log("Entrou na rota PUT")
+    const{info, novaInfo}  = req.body
+    const idUser = Number(req.params.id)
+    console.log(idUser)
+    console.log("Tipo do idUser:", typeof idUser);
+    if(info){
         if(info == "nome"){
-            try {  await prisma.usuario.update({
+              console.log("Entrou em nome")
+            try { const usuario = await prisma.usuario.update({
                    where : {id: idUser},
                     data:{nome: novaInfo}
-            }
-                 
-                )
+            }); console.log("Fez busca no banco")
+            console.log(usuario)
                 return res.status(200).render("editarperfil.html",{
-                    mensagem: "Nome atualizado com sucesso"
-                }
-                   ) 
+                    mensagem: "Nome atualizado com sucesso", usuario
+                }) 
             }catch(erro){
                return res.status(404).render("editarperfil.html",{
-                    erro: "Erro ao atualizar nome"
+                    mensagem: "Erro ao atualizar nome"
                 })
             }
         }
-        else if(Info == 'senha'){
-             try{   await prisma.usuario.update(
-                   { where:{id: idUser},
-                    data:{senha: novaInfo}}
-                )
+        else if(info == "senha"){
+            console.log("Entrou em senha")
+             try{  
+                console.log("entrou em try")
+                const usuario =  await prisma.usuario.update(
+                   {
+                     where:{id: idUser},
+                    data:{senha: novaInfo}});
+                    
+                    console.log(usuario)
                 return res.status(200).render("editarperfil.html",{
-                    mensagem:  "Senha atualizada com sucesso"
-                }
-                  )
+                    mensagem:  "Senha atualizada com sucesso", usuario
+                })
 
             }catch(erro){
                 return res.status(404).render("editarperfil.html",{
@@ -158,8 +171,9 @@ app.put('/usuario/:id', async (req,res)=>{
                 })
             }
         }
-        else if(Info == 'email'){
-            const emailExist = prisma.usuario.findUnique({
+        else if(info == "email"){
+              console.log("Entrou em email")
+            const emailExist = await prisma.usuario.findUnique({
                 where:{email: novaInfo}
             })
             if(emailExist ){
@@ -170,19 +184,20 @@ app.put('/usuario/:id', async (req,res)=>{
             }
             else if(!emailExist){
                 try{
-                     await prisma.usuario.update({
+                    const usuario =  await prisma.usuario.update({
                      where:{id:idUser},
                     data:{email : novaInfo}
                     })
                     return res.status(200).render("editarperfil.html",{
-                        mensagem:"Email atualizado com sucesso"
+                        mensagem:"Email atualizado com sucesso", usuario
                     }
                         )
                 } catch(erro){
                     return res.status(404).render("editarperfil.html",{mensagem:"Erro ao atualizar email"})
                 }
             }
-        }
+            }
+       
     }else{
       return res.status(404).render("editarperfil.html",
            { mensagem: "Erro, preencha os campos corretamente."}
@@ -207,45 +222,100 @@ app.delete('/usuario/:id', async (req,res) =>{
 //         ROTAS DE PRODUTO
 //================================================
 app.get("/redProd/:id",async (req,res)=> {
-    const idUser = req.params.id
-    const usuario = prisma.usuario.findMany({
-        where:{id: idUser},
+    const idUser = Number(req.params.id)
+    console.log("tipo do id ", typeof idUser)
+    const produto = await prisma.produto.findMany({
+        where:{usuarioId : idUser},
         include:{
             fornecedor: true
         }
     })
-    const produtos = prisma.Produto.findMany({
-        where:{usuarioId:idUser}
-    })
+   const usuario = await prisma.usuario.findUnique({
+        where:{id:idUser}
+   }); console.log(usuario)
    return res.status(200).render("pagProduto.html",{
-   usuario, produtos
+   usuario, produto
    })
 });
-app.post('/produtoCadastro', async (req,res) =>{
-    const {nomeProd, precoProd, categoriaProd, quantProd, valProd, fornProd} = req.body
-   const idUser = req.body.usuarioId
-    try{
-         if(nomeProd && categoriaProd && quantProd && valProd && fornProd){
-       await prisma.Produto.create({
-           where:{usuarioId: idUser},
-        data:{
-                nome: nomeProd,
-                preco: precoProd,
-                categoria: categoriaProd,
-                quant: quantProd,
-                val: valProd,
-                fornecedor: { connect: { id: Number(fornProd) } }
-            }
-       }
-         
-        ); 
+app.post('/produtoCadastro', async (req, res) => {
+    // 1. Recebe os dados do corpo da requisição
+    const { nomeProd, precoProd, categoriaProd, quantProd, data_val, fornProd } = req.body
+    const idUser = Number(req.body.usuarioId)
+
+    try {
+        console.log("Entrou no try do cadastro de produto")
+
+        // 2. Validação dos campos obrigatórios (usando data_val corretamente)
+        if (nomeProd && quantProd && fornProd) {
+            
+            // Cadastra no banco conectando tanto o Fornecedor quanto o Usuário
+            await prisma.produto.create({
+                data: {
+                    nome: nomeProd,
+                    preco: Number(precoProd) || 0,
+                    quant: Number(quantProd),
+                    val: data_val ? new Date(data_val) : null,
+                    categoria: categoriaProd || "",
+                    usuario: { connect: { id: idUser } },
+                    fornecedor: { connect: { id: Number(fornProd) } }
+                }
+            })
+
+            // Rebusca o usuário (com os fornecedores) e a lista atualizada de produtos
+            const usuario = await prisma.usuario.findUnique({
+                where: { id: idUser },
+                include: { fornecedor: true }
+            })
+
+            const produtos = await prisma.produto.findMany({
+                where: { usuarioId: idUser },
+                include: { fornecedor: true }
+            })
+
+            return res.status(200).render("pagProduto.html", {
+                mensagemprod: "Produto adicionado com sucesso!",
+                usuario,
+                produtos
+            })
+
+        } else {
+            // Caso falte algum campo obrigatório
+            const usuario = await prisma.usuario.findUnique({
+                where: { id: idUser },
+                include: { fornecedor: true }
+            })
+
+            const produtos = await prisma.produto.findMany({
+                where: { usuarioId: idUser },
+                include: { fornecedor: true }
+            })
+
+            return res.status(400).render("pagProduto.html", {
+                mensagemprod: "Erro ao cadastrar produto, preencha todos os campos obrigatórios.",
+                usuario,
+                produtos
+            })
+        }
+
+    } catch (erro) {
+        console.error("Erro no cadastro de produto:", erro)
+
+        // Bloco CATCH: Garante que mesmo com falha no banco o usuário e produtos sejam buscados para renderizar a tela
+        const usuario = await prisma.usuario.findUnique({
+            where: { id: idUser }
+        })
+
+        const produtos = await prisma.produto.findMany({
+            where: { usuarioId: idUser },
+            include: { fornecedor: true }
+        })
+
+        return res.status(500).render("pagProduto.html", {
+            mensagemprod: "Erro interno ao cadastrar produto.",
+            usuario,
+            produtos
+        })
     }
-    return res.status(200).render("pagProduto.html", {mensagemprod:"Produto adicionado com sucesso"})
-    }catch(erro){
-       return  res.status(404).render("pagProduto.html", {mensagemprod:"Erro ao cadastrar produto"})
-    }
-       
-    
 })
 
 app.put("/produto/:id", async (req,res) =>{

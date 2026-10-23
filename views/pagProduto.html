@@ -1,68 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="/static/style.css">
     <title>Página cadastro de produtos</title>
 </head>
 <body>
-             <h1>Estoque-aqui</h1>
-    <h2>Cadastro de fornecedores</h2>
- <div class="forms">
-    <form action="/produtoCadastro" method="post">
-     <input type="hidden" name="usuarioId" value="<$= usuario.id %>">   
-  <label for="">Nome</label><br>
-  <input type="text" name="nome" id=""><br>
-  <label for="">Preço</label><br>
-  <input type="number" name="preco" id=""><br>
-  <label for="">Quantidade</label><br>
-  <input type="number" name="quant id=""><br>
-  <label for="">Data de validade</label><br>
-  <input type="datetime" name="data_val" id=""><br>
-  <input type="submit" value="Cadastrar" class="entrar"><br>
-  <label>Fornecedor</label><br>
-     <select name="fornProd" id="">
-            <% usuario.fornecedor.forEach( fornecedor=>
-            <option value="<%=fornecedor.id%>" ><%= fornecedor.cnpj -- fornecedor.nome %></option>
-            )
-        </select><br>
-       <% if (typeof mensagemprod !== 'undefined' && mensagemprod) { %>
-    <p><%= mensagemprod %></p>
-<% } %>
-   </div> </form>
-
-   <h2>Editar produtos</h2>
-   <div >
-  <form action="/produto/<%= usuario.id %>?_method=PUT" class="forms" method="POST">
-  <label for="produtoSelect">Qual produto deseja atualizar?</label>
+    <h1>Estoque-aqui</h1>
+    <h2>Cadastro de Produtos</h2>
   
-  <% if (produtos) { %>
-    <select name="produtoId" id="produtoSelect">
-      <% produtos.forEach(produto => { %>
-        <option value="<%= produto.id %>"><%= produto.nome %></option>
-      <% }) %>
-    </select>
-    <br><br>
+    <div class="forms">
+        <form action="/produtoCadastro" method="POST">
+            
+            <input type="hidden" name="usuarioId" value="<%= usuario.id %>">   
 
-    <label for="infoSelect">Qual campo será atualizado:</label>
-    <select name="info" id="info">
-      <option value="nomeProd">Nome</option>
-      <option value="precoProd">Preço</option>
-      <option value="quantProd">Quantidade</option>
-      <option value="valProd">Validade</option>
-    </select>
-    <br><br>
+            <label>Nome</label><br>
+            <input type="text" name="nome"><br>
 
-    <label for="infoNova">Novo valor:</label>
-    <input type="text" name="infoNova" id="infoNova" required>
-    <br><br>
+            <label>Preço</label><br>
+            <input type="number" step="0.01" name="preco"><br>
 
-    <button type="submit">Atualizar</button>
-  <% } %>
-</form>
-  <% if (typeof mensagemPut !== 'undefined' && mensagemPut) { %>
-    <p><%= mensagemPut %></p>
-   </div>
+            <label>Quantidade</label><br>
+            <input type="number" name="quant" id="quant"><br>
+
+            <label>Data de validade</label><br>
+            <input type="date" name="data_val"><br>
+
+            <label>Fornecedor</label><br>
+            <select name="fornProd">
+                <% if (produtos.fornecedor && s.fornecedor.length > 0) { %>
+                    <% produtos.fornecedor.forEach(fornecedor => { %>
+                        <option value="<%= fornecedor.id %>">
+                            <%= fornecedor.cnpj %> - <%= fornecedor.nome %>
+                        </option>
+                    <% }) %>
+                <% } %>
+            </select><br><br>
+
+            <input type="submit" value="Cadastrar" class="entrar"><br>
+        </form>
+
+        <% if (typeof mensagemprod !== 'undefined' && mensagemprod) { %>
+            <p><%= mensagemprod %></p>
+        <% } %>
+    </div>
+
+    <h2>Editar produtos</h2>
+    <div>
+        <form action="/produto/<%= usuario.id %>?_method=PUT" class="forms" method="POST">
+            <label for="produtoSelect">Qual produto deseja atualizar?</label>
+            
+            <% if (produto && produto.length > 0) { %>
+                <select name="produtoId" id="produtoSelect">
+                    <% produtos.forEach(produto => { %>
+                        <option value="<%= produto.id %>"><%= produto.nome %></option>
+                    <% }) %>
+                </select>
+                <br><br>
+
+                <label for="info">Qual campo será atualizado:</label>
+                <select name="info" id="info">
+                    <option value="nomeProd">Nome</option>
+                    <option value="precoProd">Preço</option>
+                    <option value="quantProd">Quantidade</option>
+                    <option value="valProd">Validade</option>
+                </select>
+                <br><br>
+
+                <label for="infoNova">Novo valor:</label>
+                <input type="text" name="infoNova" id="infoNova" required>
+                <br><br>
+
+                <button type="submit">Atualizar</button>
+            <% } else { %>
+                <p>Nenhum produto cadastrado para edição.</p>
+            <% } %>
+        </form>
+
+        <% if (typeof mensagemPut !== 'undefined' && mensagemPut) { %>
+            <p><%= mensagemPut %></p>
+        <% } %>
+    </div>
 </body>
 </html>

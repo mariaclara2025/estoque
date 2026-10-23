@@ -9,13 +9,10 @@
 <body>
    
          <h1>Estoque-aqui</h1>
-    <h2>Editar perfil</h2
-   
-    
     <h2>Editar perfil</h2>
-    <div class="forms">
-            <form action="/usuario/<%= usuario.id %>?_method=PUT" method="POST">
-        <select name="info" id="infoNova" style=" padding: 10px; border-radius: 15px; outline: none;">
+         <div class="forms">
+            <form action="/usuario/<%= usuario.id%>?_method=put" method="POST">
+        <select name="info" id="info" style=" padding: 10px; border-radius: 15px; outline: none;">
             <option value="email">Email</option>
             <option value="senha">senha</option>
             <option value="nome">Nome</option>
@@ -28,6 +25,7 @@
         </form>
    
     </div>
+   
 
 </body>
 </html>
