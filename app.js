@@ -59,19 +59,19 @@ app.post("/usuarioLogin", async (req,res)=>{
          
            }else{
             return res.status(404).render("formsLogin.html",
-                {mensagem : "Email ou senha incorreto!"}
+                {mensagem : "Email ou senha incorreto! ❌"}
             )
            }
         
            } catch(erro){
             return res.status(404).render("formsLogin.html",{
-                mensagem: "Erro ao logar, tente novamente!"
+                mensagem: "Erro ao logar, tente novamente! ❌"
             })}
     }
     else{
         console.log("Rodou a segunda")
         return res.status(404).render("formsLogin.html", {
-            mensagem: "Preencha os campos corretamente!"
+            mensagem: "Preencha os campos corretamente! ❌"
         });
         }
 }) 
@@ -107,19 +107,19 @@ app.post('/usuario', async (req, res) => {
         } catch (erro) {
         
             return res.status(400).render("formsCadastro.html", {
-                mensagem: "Erro tente novamente!"
+                mensagem: "Erro tente novamente! ❌"
             });
             }
         
         }else{
             return res.render("formsCadastro.html",
                 {
-                    mensagem: "Email Indisponivel,tente novamente!"
+                    mensagem: "Email Indisponivel,tente novamente! ❌"
                 })
         }
     } else {
         return res.status(400).render("formsCadastro.html", { 
-            mensagem: "Erro, preencha todos os campos corretamente."
+            mensagem: "Erro, preencha todos os campos corretamente. ❌"
         });
     }}
 )
@@ -132,6 +132,16 @@ app.get("/pagEditUser/:id",async (req,res)=>{
     console.log(usuario)  
     return res.render("editarperfil.html",{ usuario })
 
+})
+app.get("/pagPrincipal/:id", async (req,res)=>{// rota para enminhar para tela principal
+    const id = Number(req.params.id)
+    const usuario = await prisma.usuario.findUnique({ where:{id: id}})
+      const produtos = await prisma.produto.findFirst({
+            where:{usuarioId: usuario.id},
+              include: {
+                fornecedor: true }
+           })
+    return res.status(200).render("pagPrincipal.html",{usuario, produtos})
 })
 //update em usuario
 app.put('/usuario/:id', async (req,res)=>{
@@ -149,11 +159,11 @@ console.log("Entrou na rota PUT")
             }); console.log("Fez busca no banco")
             console.log(usuario)
                 return res.status(200).render("editarperfil.html",{
-                    mensagem: "Nome atualizado com sucesso", usuario
+                    mensagem: "Nome atualizado com sucesso ✔️", usuario
                 }) 
             }catch(erro){
                return res.status(404).render("editarperfil.html",{
-                    mensagem: "Erro ao atualizar nome"
+                    mensagem: "Erro ao atualizar nome ❌"
                 })
             }
         }
@@ -168,12 +178,12 @@ console.log("Entrou na rota PUT")
                     
                     console.log(usuario)
                 return res.status(200).render("editarperfil.html",{
-                    mensagem:  "Senha atualizada com sucesso", usuario
+                    mensagem:  "Senha atualizada com sucesso ✔️", usuario
                 })
 
             }catch(erro){
                 return res.status(404).render("editarperfil.html",{
-                    erro: "Erro ao atualizar senha"
+                    erro: "Erro ao atualizar senha ❌"
                 })
             }
         }
@@ -184,7 +194,7 @@ console.log("Entrou na rota PUT")
             })
             if(emailExist ){
                 return res.status(404).render("editarperfil.html",{
-                    mensagem:"Email indisponivel, tente novamente!"
+                    mensagem:"Email indisponivel, tente novamente! ❌"
                 }
                     )
             }
@@ -195,18 +205,18 @@ console.log("Entrou na rota PUT")
                     data:{email : novaInfo}
                     })
                     return res.status(200).render("editarperfil.html",{
-                        mensagem:"Email atualizado com sucesso", usuario
+                        mensagem:"Email atualizado com sucesso ✔️", usuario 
                     }
                         )
                 } catch(erro){
-                    return res.status(404).render("editarperfil.html",{mensagem:"Erro ao atualizar email"})
+                    return res.status(404).render("editarperfil.html",{mensagem:"Erro ao atualizar email ❌"})
                 }
             }
             }
        
     }else{
       return res.status(404).render("editarperfil.html",
-           { mensagem: "Erro, preencha os campos corretamente."}
+           { mensagem: "Erro, preencha os campos corretamente. ❌"}
         )
     }
 })
@@ -253,132 +263,111 @@ app.get("/redProd/:id",async (req,res)=> {
    })
 });
 app.post('/produtoCadastro', async (req, res) => {
-    const { nomeProd, precoProd, categoriaProd, quantProd, data_val, fornProd } = req.body
-    const idUser = Number(req.body.usuarioId)
+    const { nome, preco, quant, data_val, fornProd, usuarioId } = req.body;
+    const idUser = Number(usuarioId);
 
     try {
-        console.log("Entrou no try do cadastro de produto")
+        if (nome && preco && quant && data_val && fornProd) {
 
-        if (nomeProd && quantProd && fornProd) {
-            
             await prisma.produto.create({
                 data: {
-                    nome: nomeProd,
-                    preco: Number(precoProd) || 0,
-                    quant: Number(quantProd),
-                    val: data_val ? new Date(data_val) : null,
+                    nome: nome,
+                    preco: parseInt(preco),
+                    quant: parseInt(quant),
+                    data_val: new Date(data_val),
                     fornecedor: { connect: { id: Number(fornProd) } },
-                    usuario: {connect:{id: idUser}}
+                    usuario: { connect: { id: idUser } }
                 }
-            })
+            });
 
-            const usuario = await prisma.usuario.findUnique({
-                where: { id: idUser },
-                include: { fornecedor: true }
-            })
-
-            const produtos = await prisma.produto.findMany({
-                where: { usuarioId: idUser },
-                include: { fornecedor: true }
-            })
+            const usuario = await prisma.usuario.findUnique({ where: { id: idUser } });
+            const produtos = await prisma.produto.findMany({ where: { usuarioId: idUser } });
+            const fornecedores = await prisma.fornecedor.findMany({ where: { usuarioId: idUser } });
 
             return res.status(200).render("pagProduto.html", {
                 mensagemprod: "Produto adicionado com sucesso!",
                 usuario,
-                produtos
-            })
+                produtos,
+                fornecedores
+            });
 
         } else {
-            const usuario = await prisma.usuario.findUnique({
-                where: { id: idUser }
-            })
-
-            const produtos = await prisma.produto.findMany({
-                where: { usuarioId: idUser },
-                include: { fornecedor: true }
-            })
+            const usuario = await prisma.usuario.findUnique({ where: { id: idUser } });
+            const produtos = await prisma.produto.findMany({ where: { usuarioId: idUser } });
+            const fornecedores = await prisma.fornecedor.findMany({ where: { usuarioId: idUser } });
 
             return res.status(400).render("pagProduto.html", {
-                mensagemprod: "Erro ao cadastrar produto, preencha todos os campos obrigatórios.",
+                mensagemprod: "Preencha todos os campos do formulário!",
                 usuario,
-                produtos
-            })
+                produtos,
+                fornecedores
+            });
         }
 
     } catch (erro) {
-        console.error("Erro no cadastro de produto:", erro)
+        console.error("Erro no cadastro de produto:", erro);
 
-        const usuario = await prisma.usuario.findUnique({
-            where: { id: idUser }
-        })
-
-        const produtos = await prisma.produto.findMany({
-            where: { usuarioId: idUser },
-            include: { fornecedor: true }
-        })
+        const usuario = await prisma.usuario.findUnique({ where: { id: idUser } });
+        const produtos = await prisma.produto.findMany({ where: { usuarioId: idUser } });
+        const fornecedores = await prisma.fornecedor.findMany({ where: { usuarioId: idUser } });
 
         return res.status(500).render("pagProduto.html", {
             mensagemprod: "Erro interno ao cadastrar produto.",
             usuario,
-            produtos
-        })
+            produtos,
+            fornecedores
+        });
     }
-})
+});
+app.put("/produto/:id", async (req, res) => {
+    const idUser = Number(req.params.id);
+    const { produtoId, info, infoNova } = req.body;
 
-app.put("/produto/:id", async (req,res) =>{
-    const {id} = req.params.id
-    const {nomeProd, precoProd, quantProd, valProd} = req.body
-    if(nomeProd || precoProd ||categoriaProd || quantProd || valProd){
-        if(nomeProd){
-            try{
-                if(nomeProd){
-                    
-                }
-                await prisma.produto.update({
-                    where:{usuarioId: id},
-                    data:{nome: nomeProd}
-                })
-                return res.status(200).render("pagProduto.html", {mensagemPut:"Nome do produto atualizado com sucesso"})
-            }catch(erro){
-                return res.status(404).render("pagProduto.html", {mensagemPut:"Erro ao atualizar nome do produto"})
-            }}
+    try {
+        const idProd = Number(produtoId);
+        let dadosParaAtualizar = {};
 
-            else if(precoProd){
-                try{
-                    await prisma.produto.update({
-                       where:{usuarioId: id},
-                        data:{preco: precoProd}
-                    })
-                    return res.status(200).render("pagProduto.html", {mensagemPut:"Preço do produto atualizado com sucesso"})
-                }catch(erro){
-                    return res.status(404).render("pagProduto.html", {mensagemPut:"Erro ao atualizar preço do produto"})
-                }}
-              
-                    else if(quantProd){
-                        try{
-                            await prisma.produto.update({
-                               where:{usuarioId: id},
-                                data:{quant: quantProd}
-                            })
-                            return res.status(200).render("pagProduto.html", {mensagemPut:"Quantidade do produto atualizado com sucesso"})
-                        }catch(erro){
-                            return res.status(404).render("pagProduto.html", {mensagemPut:"Erro ao atualizar quantidade do produto"})
-                        }}else if(valProd){
-                            try{
-                                await prisma.produto.update({
-                                   where:{usuarioId: id},
-                                    data:{val: valProd}
-                                })
-                                return res.status(200).render("pagProduto.html", {mensagemPut:"Validade do produto atualizado com sucesso"})
-                            }catch(erro){
-                                return res.status(404).render("pagProduto.html", {mensagemPut:"Erro ao atualizar validade do produto"})
-                            }
-            }   
-        }else{
-            return res.status(404).render("pagProduto.html", {mensagemPut:"Erro, Preencha a informação que deseja atualizar"})
+        if (info === "nomeProd") {
+            dadosParaAtualizar = { nome: infoNova };
+        } else if (info === "precoProd") {
+            dadosParaAtualizar = { preco: Number(infoNova) };
+        } else if (info === "quantProd") {
+            dadosParaAtualizar = { quant: Number(infoNova) };
+        } else if (info === "valProd") {
+            dadosParaAtualizar = { data_val: new Date(infoNova) };
         }
+
+        await prisma.produto.update({
+            where: { id: idProd },
+            data: dadosParaAtualizar
+        });
+
+        const usuario = await prisma.usuario.findUnique({ where: { id: idUser } });
+        const produtos = await prisma.produto.findMany({ where: { usuarioId: idUser } });
+        const fornecedores = await prisma.fornecedor.findMany({ where: { usuarioId: idUser } });
+
+        return res.status(200).render("pagProduto.html", {
+            mensagemPut: "Produto atualizado com sucesso!",
+            usuario,
+            produtos,
+            fornecedores
+        });
+
+    } catch (erro) {
+        console.error("Erro na atualização:", erro);
+
+        const usuario = await prisma.usuario.findUnique({ where: { id: idUser } });
+        const produtos = await prisma.produto.findMany({ where: { usuarioId: idUser } });
+        const fornecedores = await prisma.fornecedor.findMany({ where: { usuarioId: idUser } });
+
+        return res.status(500).render("pagProduto.html", {
+            mensagemPut: "Erro ao atualizar produto!",
+            usuario,
+            produtos,
+            fornecedores
+        });
     }
-)
+});
 app.delete('/produto/:id', async (req,res) =>{
     const {id} = req.params.id
     try{
@@ -404,9 +393,12 @@ app.get("/redForn/:id",async (req,res) =>{
     const produto = await prisma.produto.findMany({
             where:{ usuarioId : idUser}
     })
+       const fornecedor = await prisma.fornecedor.findMany({
+        where:{usuarioId: idUser}
+   })
     console.log("Produtos: ", produto)
      return res.render("pagFornecedor.html", {
-      usuario,produto
+      usuario,produto,fornecedor
     })
      }catch(erro){
         console.error("Erro ao redirecionar:", erro);
@@ -478,58 +470,124 @@ app.post("/fornecedor/:id", async (req, res) => {
 app.put("/fornAtualizar/:id",async (req,res)=>{
   const{info, infoNova} = req.body
   const idforn = req.body.fornid;
-    try{
-      const id = req.params.id
+     const idUser = Number( req.params.id)
+     try{
+   
+      const usuario = await prisma.usuario.findUnique({
+        where:{id:id}
+      })
       if(info){
+
             if(info == "nome"){
-                    const fornecedor = await prisma.fornecedor.update({
+                    const forn = await prisma.fornecedor.update({
                     where: { usuarioId: id, id: idforn},
                 data:{nome: infoNova}});
+                 const fornecedor = await prisma.fornecedor.findMany({
+            where: { usuarioId: idUser }
+        });
+
                     return res.status(204).render("pagFornecedor.html",{
-                    mensagemPut: "nome atualizado com sucesso."})
+                    mensagemPut: "nome atualizado com sucesso.", usuario, fornecedor})
             }if(info=="cnpj"){
-                    const fornecedor = await prisma.fornecedor.update({
+                    const forn = await prisma.fornecedor.update({
                     where: { usuarioId: id, id: idforn},
                 data:{cnpj: infoNova}});
+                 const fornecedor = await prisma.fornecedor.findMany({
+            where: { usuarioId: idUser }
+        });
+
                     return res.status(204).render("pagFornecedor.html",{
-                    mensagemPut: "CNPJ atualizado com sucesso."})
+                    mensagemPut: "CNPJ atualizado com sucesso.", usuario, fornecedor})
             }if(info == "email"){
-                    const fornecedor = await prisma.fornecedor.update({
+                    const fornr = await prisma.fornecedor.update({
                     where: { usuarioId: id, id: idforn},
                 data:{email: infoNova}});
+                 const fornecedor = await prisma.fornecedor.findMany({
+            where: { usuarioId: idUser }
+        });
+
                     return res.status(204).render("pagFornecedor.html",{
-                    mensagemPut: "Email atualizado com sucesso."})
+                    mensagemPut: "Email atualizado com sucesso.", usuario, fornecedor})
             }
       }else{
         return res.status(404).render("pagFornecedor.html",{
-            mensagemPut: "Preencha os campos corretamente."
+            mensagemPut: "Preencha os campos corretamente.", usuario
         })
       }
          
     }catch(erro){
+         const fornecedor = await prisma.fornecedor.findMany({
+            where: { usuarioId: idUser }
+        });
+
+        const usuario = await prisma.usuario.findUnique({
+        where:{id:idUser}
+      })
     return res.status(204).render("pagFornecedor.html",{
-        mensagemPut: "Erro ao atualizar usúario."
+        mensagemPut: "Erro ao atualizar usúario.", usuario, fornecedor
     })
         
     }});
  
 app.delete("/deleteForn/:id", async (req,res)=>{
-   const fornid = req.body
-    try{
+ const fornid = Number(req.body.fornid);
+    const idUser = Number(req.params.id);
 
-     const forn =await  prisma.fornecedor.delete({
-        where:{
-            id: Number(fornid),
-            usuarioId: Number(req.params.id)
+    console.log("ID do Usuário:", idUser);
+    console.log("ID do Fornecedor a deletar:", fornid);
+
+    try {
+        console.log("Entrou no try");
+
+        if (!fornid ) {
+            throw new Error("ID do fornecedor é inválido ou não foi selecionado.");
         }
-    }); return res.status(204).render("pagFornecedor", {
-        mensagemDel : "Fornecedor excluido com sucesso!"
-    })
-   }catch(erro){
-    return res.status(404).json({
-        mensagemDel: "Erro ao excluir fornecedor!"
-    })
-   }
+
+      
+        await prisma.produto.deleteMany({
+            where: { fornecedorId: fornid }
+        });
+
+      
+        const forn = await prisma.fornecedor.delete({
+            where: { id: fornid }
+        });
+
+        console.log("Fornecedor excluído com sucesso:", forn);
+
+      
+        const usuario = await prisma.usuario.findUnique({
+            where: { id: idUser }
+        });
+
+        const fornecedor = await prisma.fornecedor.findMany({
+            where: { usuarioId: idUser }
+        });
+
+       
+        return res.status(200).render("pagFornecedor.html", {
+            mensagemDel: "Fornecedor excluído com sucesso!",
+            usuario,
+            fornecedor
+        });
+
+    } catch (erro) {
+        console.error("Entrou no catch:", erro);
+
+        const usuario = await prisma.usuario.findUnique({
+            where: { id: idUser }
+        });
+
+        const fornecedor = await prisma.fornecedor.findMany({
+            where: { usuarioId: idUser }
+        });
+
+        return res.status(400).render("pagFornecedor.html", {
+            mensagemDel: "Erro ao excluir fornecedor!",
+            usuario,
+            fornecedor
+        });
+    }
    
 })
 app.listen(port, ()=>{

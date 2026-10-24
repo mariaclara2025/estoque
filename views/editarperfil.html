@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="/static/style.css">
     <title>Editar Perfil</title>
 </head>
 <body>
@@ -18,14 +18,15 @@
             <option value="nome">Nome</option>
         </select>
         <input type="text" name="novaInfo" required id="" placeholder="Digite a nova informação"><br>
-           <input type="submit" class="entrar">
+           <input type="submit" class="entrar"><br
         <% if (typeof mensagem !== 'undefined' && mensagem) { %>
-    <p><%= mensagem %></p>
+    <p><%= mensagem %></p><br>
 <% } %>
-        </form>
-   
+
+        </form><br>
+         <a href="/pagPrincipal/<%= usuario.id%>">⬅️ Voltar para página Principal</a>
+
     </div>
-   
 
 </body>
 </html>

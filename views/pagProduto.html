@@ -9,7 +9,7 @@
 <body>
     <h1>Estoque-aqui</h1>
     <h2>Cadastro de Produtos</h2>
-  
+     <a href="/pagPrincipal/<%= usuario.id%>"> ⬅️ Voltar para página Principal</a>
     <div class="forms">
         <form action="/produtoCadastro" method="POST">
             
@@ -83,11 +83,12 @@
             <br><br>
 
             <button type="submit">Atualizar</button>
-        </form>
+        </form><br>
 
-        <% if (typeof mensagemPut !== 'undefined' && mensagemPut) { %>
-            <p><%= mensagemPut %></p>
-        <% } %>
+      
     </div>
+      <% if (typeof mensagemPut !== 'undefined' && mensagemPut) { %>
+            <p style="text-align:center; color: white;"><%= mensagemPut %></p>
+        <% } %>
 </body>
 </html>
